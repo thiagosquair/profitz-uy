@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Send, Brain, TrendingUp, Target, AlertTriangle, Lightbulb } from "lucide-react"
+import { Send, Brain, TrendingUp, Target, AlertTriangle, Lightbulb, Loader2 } from "lucide-react"
 
 interface Message {
   id: string
@@ -40,6 +40,7 @@ export default function EnhancedCoachPage() {
     },
   ])
   const [inputMessage, setInputMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const [userInsights, setUserInsights] = useState<UserInsight[]>([
     {
       type: "pattern",
@@ -64,8 +65,28 @@ export default function EnhancedCoachPage() {
     },
   ])
 
+  // Track chat history for context
+  const [chatHistory, setChatHistory] = useState<{role: "user" | "coach", content: string}[]>([
+    {
+      role: "coach",
+      content: "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?"
+    }
+  ])
+
+  // Mock user context - in a real app, this would come from user profile and activity data
+  const userContext = {
+    emotionalState: "Mixed - some anxiety about market volatility",
+    tradingExperience: "Intermediate",
+    recentActivity: {
+      consistency: 78,
+      journalEntries: 12,
+      completedExercises: 8
+    },
+    knownPatterns: ["Anxiety during high volatility", "Early exits when in profit", "Weekend trading hesitation"]
+  }
+
   const sendMessage = async () => {
-    if (!inputMessage.trim()) return
+    if (!inputMessage.trim() || isLoading) return
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -74,48 +95,73 @@ export default function EnhancedCoachPage() {
       timestamp: new Date(),
     }
 
+    // Add user message to chat
     setMessages((prev) => [...prev, userMessage])
+    
+    // Add to chat history for context
+    const updatedChatHistory = [
+      ...chatHistory,
+      { role: "user", content: inputMessage }
+    ].slice(-10) // Keep only last 10 messages for context
+    
+    setChatHistory(updatedChatHistory)
     setInputMessage("")
+    setIsLoading(true)
 
-    // Simulate advanced AI response with behavioral analysis
-    setTimeout(() => {
+    try {
+      // Call the AI Coach API
+      const response = await fetch("/api/ai-coach", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: inputMessage,
+          userContext,
+          chatHistory: updatedChatHistory
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to get AI coach response")
+      }
+
+      const data = await response.json()
+      
+      // Create coach response message
       const coachResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: getAdvancedCoachResponse(inputMessage),
+        id: Date.now().toString(),
+        content: data.response,
         sender: "coach",
         timestamp: new Date(),
-        type: determineResponseType(inputMessage),
+        type: data.type,
       }
+      
+      // Add coach response to messages
       setMessages((prev) => [...prev, coachResponse])
-    }, 1500)
-  }
-
-  const getAdvancedCoachResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase()
-
-    if (input.includes("anxious") || input.includes("worried")) {
-      return "I understand you're feeling anxious. Based on your behavioral patterns, this typically happens when market volatility increases. Let's work through the CALM technique: C - Center yourself with deep breathing, A - Acknowledge the emotion without judgment, L - Locate the physical sensation, M - Move forward with intention. Your anxiety response has decreased 15% since last month, showing real progress. Would you like me to guide you through a specific exercise for managing trading anxiety?"
+      
+      // Add to chat history
+      setChatHistory([
+        ...updatedChatHistory,
+        { role: "coach", content: data.response }
+      ].slice(-10))
+      
+    } catch (error) {
+      console.error("Error getting AI coach response:", error)
+      
+      // Add error message
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        content: "I'm having trouble connecting right now. Please try again in a moment.",
+        sender: "coach",
+        timestamp: new Date(),
+        type: "insight",
+      }
+      
+      setMessages((prev) => [...prev, errorMessage])
+    } finally {
+      setIsLoading(false)
     }
-
-    if (input.includes("consistency") || input.includes("habit")) {
-      return "Your consistency data shows interesting patterns. You've maintained a 78% completion rate over the past month, with strongest performance on Tuesday-Thursday (89% avg) and challenges on weekends (52% avg). The predictive model suggests focusing on micro-habits during low-energy periods. I recommend the '2-minute rule' for weekend engagement - just 2 minutes of reflection can maintain your neural pathways. Shall we design a personalized weekend routine?"
-    }
-
-    if (input.includes("progress") || input.includes("improvement")) {
-      return "Your progress metrics are encouraging! Emotional regulation skills have improved 34% based on assessment scores and reflection quality analysis. The consistency tracker shows you're in the 'sustainable growth' zone. However, I notice risk management psychology could use attention - your confidence in risk scenarios has plateaued. This is normal at your development stage. Ready to tackle some advanced risk psychology exercises?"
-    }
-
-    return "I'm analyzing your question in the context of your behavioral patterns and current development stage. Based on your profile as an intermediate learner with strong self-awareness but developing emotional regulation skills, I'd recommend focusing on the intersection of market psychology and personal triggers. Your recent activity suggests you're ready for more advanced concepts. What specific aspect of trading psychology feels most challenging right now?"
-  }
-
-  const determineResponseType = (input: string): "intervention" | "recommendation" | "insight" => {
-    if (input.toLowerCase().includes("anxious") || input.toLowerCase().includes("struggling")) {
-      return "intervention"
-    }
-    if (input.toLowerCase().includes("what should") || input.toLowerCase().includes("recommend")) {
-      return "recommendation"
-    }
-    return "insight"
   }
 
   const getInsightIcon = (type: string) => {
@@ -220,6 +266,22 @@ export default function EnhancedCoachPage() {
                           </div>
                         </div>
                       ))}
+                      
+                      {isLoading && (
+                        <div className="flex justify-start">
+                          <div className="flex items-start space-x-2 max-w-[85%]">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>AI</AvatarFallback>
+                            </Avatar>
+                            <div className="rounded-lg p-4 bg-white border border-gray-200 text-gray-900">
+                              <div className="flex items-center space-x-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <p className="text-sm">Analyzing your question...</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </ScrollArea>
 
@@ -230,9 +292,10 @@ export default function EnhancedCoachPage() {
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                       className="flex-1"
+                      disabled={isLoading}
                     />
-                    <Button onClick={sendMessage}>
-                      <Send className="h-4 w-4" />
+                    <Button onClick={sendMessage} disabled={isLoading}>
+                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     </Button>
                   </div>
                 </CardContent>
