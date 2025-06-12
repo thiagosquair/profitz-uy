@@ -1,0 +1,51 @@
+{
+  "common": {
+    "welcome": "Bienvenue chez ProFitz",
+    "appName": "ProFitz",
+    "tagline": "Psychologie du Trading",
+    "continue": "Continuer",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "complete": "Terminer",
+    "cancel": "Annuler",
+    "save": "Sauvegarder",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "navigation": {
+    "dashboard": "Tableau de Bord",
+    "aiCoach": "Coach IA",
+    "learningPath": "Parcours d\u0027Apprentissage",
+    "exercises": "Exercices",
+    "reflections": "Réflexions",
+    "tradeJournal": "Journal de Trading",
+    "progress": "Progrès",
+    "achievements": "Réalisations",
+    "subscriptionPlans": "Plans d\u0027Abonnement",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "signOut": "Se Déconnecter"
+  },
+  "profileBuilder": {
+    "welcomeTitle": "Bienvenue chez ProFitz",
+    "welcomeDescription": "Vous venez de faire le premier pas vers la ma\u00eetrise de votre esprit de trader. Transformons votre parcours ensemble.",
+    "assessmentTitle": "\u00c9valuation de Psychologie de Trading",
+    "assessmentDescription": "Aidez-nous \u00e0 comprendre votre mentalit\u00e9 de trading pour fournir des insights personnalis\u00e9s",
+    "questionProgress": "Question {{current}} sur {{total}}",
+    "percentComplete": "{{percent}}% Termin\u00e9",
+    "viewResults": "Voir les R\u00e9sultats",
+    "completeAssessment": "Terminer l\u0027\u00c9valuation"
+  },
+  "psychologyCategories": {
+    "riskManagement": "Gestion des Risques",
+    "emotionalControl": "Contr\u00f4le \u00c9motionnel",
+    "decisionMaking": "Prise de D\u00e9cision",
+    "stressManagement": "Gestion du Stress",
+    "tradingConfidence": "Confiance en Trading",
+    "learningAdaptation": "Apprentissage et Adaptation"
+  },
+  "quotes": {
+    "dailyWisdom": "Sagesse Quotidienne de Trading"
+  }
+}
