@@ -89,6 +89,13 @@ export default function EnhancedCoachPage() {
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
 
+    // Add this check to ensure the fetch call only runs in the browser
+    if (typeof window === 'undefined') {
+      console.warn("Skipping API call to /api/ai-coach during server-side render/build.");
+      setIsLoading(false); // Ensure loading state is reset
+      return;
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputMessage,
@@ -326,7 +333,8 @@ export default function EnhancedCoachPage() {
                               window.location.href = "/learning-path?focus=risk-management"
                             } else if (insight.type === "pattern") {
                               window.location.href = "/analytics"
-                            } else {
+                            }
+                            else {
                               window.location.href = "/exercises?category=Emotional%20Regulation"
                             }
                           }}
@@ -398,7 +406,7 @@ export default function EnhancedCoachPage() {
                     onClick={() => (window.location.href = "/learning-path")}
                   >
                     <Lightbulb className="mr-2 h-4 w-4" />
-                    Get Recommendations
+                    Get Recommended Learning Path
                   </Button>
                 </CardContent>
               </Card>
