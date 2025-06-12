@@ -216,5 +216,3 @@ export function ProfileBuilderModal({ open, onOpenChange }: ProfileBuilderModalP
     </Dialog>
   )
 }
-
-
