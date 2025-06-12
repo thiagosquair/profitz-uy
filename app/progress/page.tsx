@@ -1,214 +1,125 @@
-import { Navigation } from "@/components/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Badge } from "@/components/ui/badge"
-import { TrendingUp, Target, Brain, BookOpen, Calendar, Award } from "lucide-react"
+"use client"
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js"
+import { Bar, Pie } from "react-chartjs-2"
 
-export default function ProgressPage() {
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement)
+
+const ProgressPage = () => {
+  const barChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Daily Progress",
+      },
+    },
+  }
+
+  const barChartData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        label: "Tasks Completed",
+        data: [12, 19, 3, 5, 2, 3, 10],
+        backgroundColor: "rgba(54, 162, 235, 0.5)",
+      },
+    ],
+  }
+
+  const pieChartData = {
+    labels: ["Completed", "In Progress", "Pending"],
+    datasets: [
+      {
+        label: "# of Tasks",
+        data: [30, 50, 20],
+        backgroundColor: ["rgba(255, 99, 132, 0.5)", "rgba(54, 162, 235, 0.5)", "rgba(255, 206, 86, 0.5)"],
+        borderWidth: 1,
+      },
+    ],
+  }
+
+  const pieChartOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Task Distribution",
+      },
+    },
+  }
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <Navigation />
+    <div className="bg-gray-50 min-h-screen py-6">
+      <div className="container mx-auto px-4">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6">Progress Tracking</h1>
 
-      <main className="flex-1 p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Progress</h1>
-            <p className="text-gray-600">Track your journey to mastering trading psychology</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Bar Chart */}
+          <div className="bg-white shadow rounded-lg p-4">
+            <Bar options={barChartOptions} data={barChartData} />
           </div>
 
-          {/* Overall Progress */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <TrendingUp className="mr-2 h-5 w-5 text-green-600" />
-                  Overall Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-2">78%</div>
-                <Progress value={78} className="mb-2" />
-                <p className="text-sm text-gray-600">Great progress! Keep it up.</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Calendar className="mr-2 h-5 w-5 text-blue-600" />
-                  Current Streak
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-2">12 days</div>
-                <p className="text-sm text-gray-600">Longest streak: 18 days</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center text-lg">
-                  <Award className="mr-2 h-5 w-5 text-purple-600" />
-                  Level
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold mb-2">Level 3</div>
-                <Progress value={65} className="mb-2" />
-                <p className="text-sm text-gray-600">650/1000 XP to Level 4</p>
-              </CardContent>
-            </Card>
+          {/* Pie Chart */}
+          <div className="bg-white shadow rounded-lg p-4">
+            <Pie data={pieChartData} options={pieChartOptions} />
           </div>
-
-          {/* Skills Progress */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Skills Development</CardTitle>
-              <CardDescription>Your progress in key trading psychology areas</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Emotional Regulation</span>
-                    <span className="text-sm text-gray-600">85%</span>
-                  </div>
-                  <Progress value={85} />
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Risk Management Psychology</span>
-                    <span className="text-sm text-gray-600">72%</span>
-                  </div>
-                  <Progress value={72} />
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Discipline & Consistency</span>
-                    <span className="text-sm text-gray-600">68%</span>
-                  </div>
-                  <Progress value={68} />
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Self-Awareness</span>
-                    <span className="text-sm text-gray-600">90%</span>
-                  </div>
-                  <Progress value={90} />
-                </div>
-
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Habit Formation</span>
-                    <span className="text-sm text-gray-600">55%</span>
-                  </div>
-                  <Progress value={55} />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Activity Summary */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Target className="mr-2 h-5 w-5" />
-                  Exercises Completed
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>This Week</span>
-                    <Badge>5 exercises</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>This Month</span>
-                    <Badge>18 exercises</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Total</span>
-                    <Badge>47 exercises</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BookOpen className="mr-2 h-5 w-5" />
-                  Reflections Written
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span>This Week</span>
-                    <Badge>3 reflections</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>This Month</span>
-                    <Badge>12 reflections</Badge>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span>Total</span>
-                    <Badge>28 reflections</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Achievements */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Award className="mr-2 h-5 w-5" />
-                Achievements
-              </CardTitle>
-              <CardDescription>Milestones you've reached on your journey</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center p-4 bg-green-50 rounded-lg border border-green-200">
-                  <div className="h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                    <Target className="h-6 w-6 text-green-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-green-900">First Exercise</h3>
-                    <p className="text-sm text-green-700">Completed your first exercise</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                    <Calendar className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-blue-900">Week Warrior</h3>
-                    <p className="text-sm text-blue-700">7-day activity streak</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center p-4 bg-purple-50 rounded-lg border border-purple-200">
-                  <div className="h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                    <Brain className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-purple-900">Mind Master</h3>
-                    <p className="text-sm text-purple-700">50 AI coach sessions</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
-      </main>
+
+        {/* Progress Indicators */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Milestones</h2>
+          <div className="flex items-center justify-between">
+            <div className="w-1/4 text-center">
+              <div className="rounded-full h-12 w-12 flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold">
+                1
+              </div>
+              <p className="text-gray-700 mt-2">Start</p>
+            </div>
+            <div className="w-1/4 text-center">
+              <div className="rounded-full h-12 w-12 flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold">
+                2
+              </div>
+              <p className="text-gray-700 mt-2">Milestone 1</p>
+            </div>
+            <div className="w-1/4 text-center">
+              <div className="rounded-full h-12 w-12 flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold">
+                3
+              </div>
+              <p className="text-gray-700 mt-2">Milestone 2</p>
+            </div>
+            <div className="w-1/4 text-center">
+              <div className="rounded-full h-12 w-12 flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-500 text-white font-bold">
+                4
+              </div>
+              <p className="text-gray-700 mt-2">Finish</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Achievement Badges */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Achievements</h2>
+          <div className="flex items-center justify-start space-x-4">
+            <div className="bg-green-200 text-green-700 rounded-full h-16 w-16 flex items-center justify-center">
+              <span className="text-2xl">🏆</span>
+            </div>
+            <div className="bg-yellow-200 text-yellow-700 rounded-full h-16 w-16 flex items-center justify-center">
+              <span className="text-2xl">🌟</span>
+            </div>
+            <div className="bg-blue-200 text-blue-700 rounded-full h-16 w-16 flex items-center justify-center">
+              <span className="text-2xl">🏅</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
+
+export default ProgressPage

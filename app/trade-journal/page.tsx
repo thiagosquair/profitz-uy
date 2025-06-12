@@ -1,167 +1,86 @@
 "use client"
+
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import { Navigation } from "@/components/navigation"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Calendar, Upload, Search, BarChart3, Brain, TrendingUp, TrendingDown, Activity, Gauge } from "lucide-react"
-import Link from "next/link"
+import { Upload, Calendar, Filter, ArrowUpDown, Search } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function TradeJournalPage() {
+  const [trades, setTrades] = useState<any[]>([])
+  const [filteredTrades, setFilteredTrades] = useState<any[]>([])
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedTimeframe, setSelectedTimeframe] = useState("all")
-  const [selectedResult, setSelectedResult] = useState("all")
-  const [selectedEmotion, setSelectedEmotion] = useState("all")
-  const [trades, setTrades] = useState([])
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc")
+  const [filterType, setFilterType] = useState("all")
 
   useEffect(() => {
     // Load trades from localStorage
-    const storedTrades = JSON.parse(localStorage.getItem("userTrades") || "[]")
-
-    // Combine with sample data for demo
-    const sampleTrades = [
-      {
-        id: "sample_1",
-        symbol: "EURUSD",
-        direction: "long",
-        result: "win",
-        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        emotion: "anxiety",
-        emotionIntensity: 7,
-        timeframe: "1H",
-        imageUrl: "/placeholder.svg?height=200&width=300",
-        pips: 30,
-        marketContext: {
-          volatility: { value: 0.65, isHigh: false },
-          trend: { direction: "sideways", strength: 25 },
-        },
-      },
-      {
-        id: "sample_2",
-        symbol: "GBPJPY",
-        direction: "short",
-        result: "win",
-        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
-        emotion: "confidence",
-        emotionIntensity: 8,
-        timeframe: "4H",
-        imageUrl: "/placeholder.svg?height=200&width=300",
-        pips: 85,
-        marketContext: {
-          volatility: { value: 0.85, isHigh: true },
-          trend: { direction: "down", strength: 82 },
-        },
-      },
-      {
-        id: "sample_3",
-        symbol: "GBPUSD",
-        direction: "long",
-        result: "loss",
-        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        emotion: "impatient",
-        emotionIntensity: 6,
-        timeframe: "1H",
-        imageUrl: "/placeholder.svg?height=200&width=300",
-        pips: -45,
-        marketContext: {
-          volatility: { value: 0.72, isHigh: false },
-          trend: { direction: "up", strength: 45 },
-        },
-      },
-      {
-        id: "sample_4",
-        symbol: "USDJPY",
-        direction: "short",
-        result: "loss",
-        date: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
-        emotion: "fear",
-        emotionIntensity: 8,
-        timeframe: "Daily",
-        imageUrl: "/placeholder.svg?height=200&width=300",
-        pips: -65,
-        marketContext: {
-          volatility: { value: 0.95, isHigh: true },
-          trend: { direction: "up", strength: 75 },
-        },
-      },
-    ]
-
-    // Convert stored trades to display format
-    const formattedStoredTrades = storedTrades.map((trade) => ({
-      id: trade.id,
-      symbol: trade.tradeDetails?.symbol || "Unknown",
-      direction: trade.tradeDetails?.direction || "unknown",
-      result: trade.tradeDetails?.result || "unknown",
-      date: new Date(trade.timestamp),
-      emotion: trade.emotionalState?.primaryEmotion || "unknown",
-      emotionIntensity: trade.emotionalState?.intensity || 5,
-      timeframe: trade.tradeDetails?.timeframe || "1H",
-      imageUrl: trade.imageUrl,
-      pips: trade.tradeDetails?.result === "win" ? 30 : -20, // Simplified for demo
-      marketContext: {
-        volatility: { value: 0.65, isHigh: false },
-        trend: { direction: "sideways", strength: 25 },
-      },
-    }))
-
-    setTrades([...formattedStoredTrades, ...sampleTrades])
+    const storedTrades = localStorage.getItem("userTrades")
+    if (storedTrades) {
+      const parsedTrades = JSON.parse(storedTrades)
+      setTrades(parsedTrades)
+      setFilteredTrades(parsedTrades)
+    }
   }, [])
 
-  // Filter trades based on search and filters
-  const filteredTrades = trades.filter((trade) => {
-    const matchesSearch =
-      searchQuery === "" ||
-      trade.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trade.direction.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    let result = [...trades]
 
-    const matchesTimeframe = selectedTimeframe === "all" || trade.timeframe === selectedTimeframe
-    const matchesResult = selectedResult === "all" || trade.result === selectedResult
-    const matchesEmotion = selectedEmotion === "all" || trade.emotion === selectedEmotion
+    // Apply search filter
+    if (searchQuery) {
+      result = result.filter(
+        (trade) =>
+          trade.tradeDetails?.symbol?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          trade.tradeDetails?.strategy?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          trade.emotionalState?.primaryEmotion?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+    }
 
-    return matchesSearch && matchesTimeframe && matchesResult && matchesEmotion
-  })
+    // Apply type filter
+    if (filterType !== "all") {
+      result = result.filter((trade) => {
+        if (filterType === "winning" && trade.tradeDetails.result === "win") return true
+        if (filterType === "losing" && trade.tradeDetails.result === "loss") return true
+        if (filterType === "breakeven" && trade.tradeDetails.result === "breakeven") return true
+        return false
+      })
+    }
 
-  // Calculate statistics
-  const totalTrades = trades.length
-  const winningTrades = trades.filter((trade) => trade.result === "win").length
-  const losingTrades = trades.filter((trade) => trade.result === "loss").length
-  const winRate = totalTrades > 0 ? Math.round((winningTrades / totalTrades) * 100) : 0
-  const totalPips = trades.reduce((sum, trade) => sum + trade.pips, 0)
+    // Apply sort
+    result.sort((a, b) => {
+      const dateA = new Date(a.timestamp).getTime()
+      const dateB = new Date(b.timestamp).getTime()
+      return sortOrder === "asc" ? dateA - dateB : dateB - dateA
+    })
+
+    setFilteredTrades(result)
+  }, [trades, searchQuery, sortOrder, filterType])
 
   const getResultColor = (result: string) => {
     switch (result) {
       case "win":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800 hover:bg-green-200"
       case "loss":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800 hover:bg-red-200"
+      case "breakeven":
+        return "bg-gray-100 text-gray-800 hover:bg-gray-200"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-blue-100 text-blue-800 hover:bg-blue-200"
     }
   }
 
-  const getEmotionColor = (emotion: string) => {
-    const emotionColors: { [key: string]: string } = {
-      anxiety: "bg-yellow-100 text-yellow-800",
-      confidence: "bg-blue-100 text-blue-800",
-      impatient: "bg-orange-100 text-orange-800",
-      fear: "bg-red-100 text-red-800",
-    }
-    return emotionColors[emotion.toLowerCase()] || "bg-gray-100 text-gray-800"
-  }
-
-  const getTrendIcon = (direction: string) => {
-    switch (direction) {
-      case "up":
-        return <TrendingUp className="h-4 w-4 text-green-600" />
-      case "down":
-        return <TrendingDown className="h-4 w-4 text-red-600" />
-      default:
-        return <Activity className="h-4 w-4 text-gray-600" />
-    }
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
   }
 
   return (
@@ -169,226 +88,310 @@ export default function TradeJournalPage() {
       <Navigation />
 
       <main className="flex-1 p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Trade Journal</h1>
+              <h1 className="text-3xl font-bold text-gray-900">Trade Journal</h1>
               <p className="text-gray-500">Track, analyze, and improve your trading performance</p>
             </div>
-            <div className="mt-4 md:mt-0">
-              <Link href="/trade-journal/upload">
-                <Button className="flex items-center">
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload Trade
-                </Button>
-              </Link>
+            <Link href="/trade-journal/upload">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Trade
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mb-6 flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Input
+                placeholder="Search trades by symbol, strategy, or emotion..."
+                className="pl-10"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[180px] bg-white">
+                  <div className="flex items-center">
+                    <Filter className="mr-2 h-4 w-4 text-gray-500" />
+                    <SelectValue placeholder="Filter" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Trades</SelectItem>
+                  <SelectItem value="winning">Winning Trades</SelectItem>
+                  <SelectItem value="losing">Losing Trades</SelectItem>
+                  <SelectItem value="breakeven">Breakeven Trades</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="outline"
+                className="bg-white"
+                onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+              >
+                <Calendar className="mr-2 h-4 w-4 text-gray-500" />
+                Date
+                <ArrowUpDown className="ml-2 h-4 w-4 text-gray-500" />
+              </Button>
             </div>
           </div>
 
-          <Tabs defaultValue="journal" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="journal">Journal</TabsTrigger>
-              <TabsTrigger value="statistics">Statistics</TabsTrigger>
+          <Tabs defaultValue="list" className="w-full">
+            <TabsList className="mb-6 bg-white">
+              <TabsTrigger value="list">List View</TabsTrigger>
+              <TabsTrigger value="grid">Grid View</TabsTrigger>
+              <TabsTrigger value="calendar">Calendar View</TabsTrigger>
+              <TabsTrigger value="stats">Statistics</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="journal" className="space-y-6">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle>Filters</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="relative">
-                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
-                      <Input
-                        placeholder="Search trades..."
-                        className="pl-8"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                    </div>
-                    <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Timeframe" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Timeframes</SelectItem>
-                        <SelectItem value="1H">1 Hour</SelectItem>
-                        <SelectItem value="4H">4 Hours</SelectItem>
-                        <SelectItem value="Daily">Daily</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={selectedResult} onValueChange={setSelectedResult}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Result" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Results</SelectItem>
-                        <SelectItem value="win">Win</SelectItem>
-                        <SelectItem value="loss">Loss</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select value={selectedEmotion} onValueChange={setSelectedEmotion}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Emotion" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Emotions</SelectItem>
-                        <SelectItem value="anxiety">Anxiety</SelectItem>
-                        <SelectItem value="confidence">Confidence</SelectItem>
-                        <SelectItem value="impatient">Impatience</SelectItem>
-                        <SelectItem value="fear">Fear</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredTrades.length > 0 ? (
-                  filteredTrades.map((trade) => (
-                    <Link href={`/trade-journal/${trade.id}`} key={trade.id}>
-                      <Card className="h-full hover:shadow-md transition-shadow">
-                        <div className="relative">
-                          <img
-                            src={trade.imageUrl || "/placeholder.svg"}
-                            alt={`${trade.symbol} chart`}
-                            className="w-full h-40 object-cover rounded-t-lg"
-                          />
-                          <div className="absolute top-2 right-2 flex space-x-2">
-                            <Badge className={getResultColor(trade.result)}>{trade.result}</Badge>
+            <TabsContent value="list" className="space-y-4">
+              {filteredTrades.length === 0 ? (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <Upload className="h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900 mb-2">No trades found</h3>
+                    <p className="text-gray-500 mb-4 text-center max-w-md">
+                      Upload your first trade to start tracking your performance and get AI-powered insights
+                    </p>
+                    <Link href="/trade-journal/upload">
+                      <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                        <Upload className="mr-2 h-4 w-4" />
+                        Upload Trade
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ) : (
+                filteredTrades.map((trade) => (
+                  <Link href={`/trade-journal/${trade.id}`} key={trade.id}>
+                    <Card className="hover:shadow-md transition-shadow">
+                      <CardContent className="p-0">
+                        <div className="flex flex-col md:flex-row">
+                          <div className="w-full md:w-48 h-32 relative">
+                            <img
+                              src={trade.imageUrl || "/placeholder.svg"}
+                              alt="Trade chart"
+                              className="w-full h-full object-cover object-center"
+                            />
                           </div>
-                        </div>
-                        <CardHeader className="pb-2">
-                          <div className="flex justify-between items-center">
-                            <CardTitle className="text-xl">{trade.symbol}</CardTitle>
-                            <Badge variant="outline">{trade.timeframe}</Badge>
-                          </div>
-                          <CardDescription className="flex items-center">
-                            <Calendar className="h-3 w-3 mr-1" />
-                            {trade.date.toLocaleDateString()}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="pb-2">
-                          <div className="flex justify-between items-center mb-3">
-                            <Badge variant="outline" className="capitalize">
-                              {trade.direction}
-                            </Badge>
-                            <span className={`font-medium ${trade.pips > 0 ? "text-green-600" : "text-red-600"}`}>
-                              {trade.pips > 0 ? "+" : ""}
-                              {trade.pips} pips
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <Badge className={getEmotionColor(trade.emotion)}>
-                              {trade.emotion} ({trade.emotionIntensity}/10)
-                            </Badge>
-                          </div>
-                        </CardContent>
-                        <Separator />
-                        <CardFooter className="pt-3">
-                          <div className="w-full grid grid-cols-2 gap-2">
-                            <div className="flex items-center text-sm">
-                              <Gauge className="h-4 w-4 mr-1 text-blue-600" />
-                              <span className="text-gray-600">Volatility:</span>
-                              <span className="ml-1 font-medium">{trade.marketContext.volatility.value}%</span>
-                              {trade.marketContext.volatility.isHigh && (
-                                <Badge variant="outline" className="ml-1 py-0 h-5 bg-yellow-50">
-                                  High
+                          <div className="p-4 flex-1">
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h3 className="font-medium text-gray-900">
+                                  {trade.tradeDetails.symbol || "Unknown Symbol"}{" "}
+                                  <Badge
+                                    variant="secondary"
+                                    className={getResultColor(trade.tradeDetails.result || "unknown")}
+                                  >
+                                    {trade.tradeDetails.result === "win"
+                                      ? "Win"
+                                      : trade.tradeDetails.result === "loss"
+                                        ? "Loss"
+                                        : trade.tradeDetails.result === "breakeven"
+                                          ? "Breakeven"
+                                          : "Unknown"}
+                                  </Badge>
+                                </h3>
+                                <div className="text-sm text-gray-500 mt-1">
+                                  {formatDate(trade.timestamp)} • {trade.tradeDetails.timeframe} •{" "}
+                                  {trade.tradeDetails.direction === "long" ? "Long" : "Short"}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {trade.tradeDetails.entryPrice && trade.tradeDetails.exitPrice ? (
+                                    <span
+                                      className={
+                                        trade.tradeDetails.result === "win"
+                                          ? "text-green-600"
+                                          : trade.tradeDetails.result === "loss"
+                                            ? "text-red-600"
+                                            : "text-gray-600"
+                                      }
+                                    >
+                                      {trade.tradeDetails.direction === "long"
+                                        ? (
+                                            ((trade.tradeDetails.exitPrice - trade.tradeDetails.entryPrice) /
+                                              trade.tradeDetails.entryPrice) *
+                                            100
+                                          ).toFixed(2)
+                                        : (
+                                            ((trade.tradeDetails.entryPrice - trade.tradeDetails.exitPrice) /
+                                              trade.tradeDetails.entryPrice) *
+                                            100
+                                          ).toFixed(2)}
+                                      %
+                                    </span>
+                                  ) : (
+                                    "N/A"
+                                  )}
+                                </div>
+                                {trade.tradeDetails.riskRewardRatio && (
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    R:R {trade.tradeDetails.riskRewardRatio}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              {trade.tradeDetails.strategy && (
+                                <Badge variant="outline" className="bg-white">
+                                  {trade.tradeDetails.strategy}
+                                </Badge>
+                              )}
+                              {trade.emotionalState.primaryEmotion && (
+                                <Badge variant="outline" className="bg-white">
+                                  {trade.emotionalState.primaryEmotion}
+                                </Badge>
+                              )}
+                              {trade.aiAnalysis && (
+                                <Badge
+                                  variant="outline"
+                                  className="bg-gradient-to-r from-blue-50 to-purple-50 text-blue-700 border-blue-200"
+                                >
+                                  AI Analyzed
                                 </Badge>
                               )}
                             </div>
-                            <div className="flex items-center text-sm">
-                              {getTrendIcon(trade.marketContext.trend.direction)}
-                              <span className="text-gray-600 ml-1">Trend:</span>
-                              <span className="ml-1 font-medium capitalize">{trade.marketContext.trend.direction}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))
+              )}
+            </TabsContent>
+
+            <TabsContent value="grid">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredTrades.length === 0 ? (
+                  <Card className="col-span-full">
+                    <CardContent className="flex flex-col items-center justify-center py-12">
+                      <Upload className="h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-xl font-medium text-gray-900 mb-2">No trades found</h3>
+                      <p className="text-gray-500 mb-4 text-center max-w-md">
+                        Upload your first trade to start tracking your performance and get AI-powered insights
+                      </p>
+                      <Link href="/trade-journal/upload">
+                        <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                          <Upload className="mr-2 h-4 w-4" />
+                          Upload Trade
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  filteredTrades.map((trade) => (
+                    <Link href={`/trade-journal/${trade.id}`} key={trade.id}>
+                      <Card className="hover:shadow-md transition-shadow h-full">
+                        <div className="w-full h-40 relative">
+                          <img
+                            src={trade.imageUrl || "/placeholder.svg"}
+                            alt="Trade chart"
+                            className="w-full h-full object-cover object-center"
+                          />
+                          <Badge
+                            className={`absolute top-2 right-2 ${getResultColor(
+                              trade.tradeDetails.result || "unknown",
+                            )}`}
+                          >
+                            {trade.tradeDetails.result === "win"
+                              ? "Win"
+                              : trade.tradeDetails.result === "loss"
+                                ? "Loss"
+                                : trade.tradeDetails.result === "breakeven"
+                                  ? "Breakeven"
+                                  : "Unknown"}
+                          </Badge>
+                        </div>
+                        <CardContent className="p-4">
+                          <div className="flex justify-between items-start">
+                            <h3 className="font-medium text-gray-900">
+                              {trade.tradeDetails.symbol || "Unknown Symbol"}
+                            </h3>
+                            <div className="text-right">
+                              <div className="text-sm font-medium">
+                                {trade.tradeDetails.entryPrice && trade.tradeDetails.exitPrice ? (
+                                  <span
+                                    className={
+                                      trade.tradeDetails.result === "win"
+                                        ? "text-green-600"
+                                        : trade.tradeDetails.result === "loss"
+                                          ? "text-red-600"
+                                          : "text-gray-600"
+                                    }
+                                  >
+                                    {trade.tradeDetails.direction === "long"
+                                      ? (
+                                          ((trade.tradeDetails.exitPrice - trade.tradeDetails.entryPrice) /
+                                            trade.tradeDetails.entryPrice) *
+                                          100
+                                        ).toFixed(2)
+                                      : (
+                                          ((trade.tradeDetails.entryPrice - trade.tradeDetails.exitPrice) /
+                                            trade.tradeDetails.entryPrice) *
+                                          100
+                                        ).toFixed(2)}
+                                    %
+                                  </span>
+                                ) : (
+                                  "N/A"
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </CardFooter>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {formatDate(trade.timestamp)} • {trade.tradeDetails.timeframe}
+                          </div>
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {trade.tradeDetails.strategy && (
+                              <Badge variant="outline" className="bg-white text-xs">
+                                {trade.tradeDetails.strategy}
+                              </Badge>
+                            )}
+                            {trade.emotionalState.primaryEmotion && (
+                              <Badge variant="outline" className="bg-white text-xs">
+                                {trade.emotionalState.primaryEmotion}
+                              </Badge>
+                            )}
+                          </div>
+                        </CardContent>
                       </Card>
                     </Link>
                   ))
-                ) : (
-                  <div className="col-span-3 text-center py-12">
-                    <p className="text-gray-500">No trades match your filters.</p>
-                  </div>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="statistics" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-500">Total Trades</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{totalTrades}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-500">Win Rate</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-3xl font-bold">{winRate}%</div>
-                    <p className="text-sm text-gray-500">
-                      {winningTrades} wins, {losingTrades} losses
+            <TabsContent value="calendar">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900 mb-2">Calendar View Coming Soon</h3>
+                    <p className="text-gray-500 mb-4">
+                      We're working on a calendar view to help you visualize your trading patterns over time.
                     </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-500">Total Pips</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className={`text-3xl font-bold ${totalPips >= 0 ? "text-green-600" : "text-red-600"}`}>
-                      {totalPips > 0 ? "+" : ""}
-                      {totalPips}
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-medium text-gray-500">Avg. Pips per Trade</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div
-                      className={`text-3xl font-bold ${
-                        totalTrades > 0 && totalPips / totalTrades >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {totalTrades > 0 ? (totalPips / totalTrades > 0 ? "+" : "") : ""}
-                      {totalTrades > 0 ? (totalPips / totalTrades).toFixed(1) : "0"}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <BarChart3 className="mr-2 h-5 w-5" />
-                      Performance by Timeframe
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12 text-gray-500">More data needed for meaningful statistics.</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Brain className="mr-2 h-5 w-5" />
-                      Emotional Impact
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-12 text-gray-500">More data needed for meaningful statistics.</div>
-                  </CardContent>
-                </Card>
-              </div>
+            <TabsContent value="stats">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="text-center py-12">
+                    <ArrowUpDown className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-xl font-medium text-gray-900 mb-2">Statistics Coming Soon</h3>
+                    <p className="text-gray-500 mb-4">
+                      We're working on comprehensive statistics to help you analyze your trading performance.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>

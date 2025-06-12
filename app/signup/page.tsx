@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Brain, Eye, EyeOff, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { simulateSignUp } from "@/lib/auth-simulation"
+import Link from "next/link"
 
 export default function SignUp() {
   const router = useRouter()
@@ -79,35 +80,46 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-[20%] left-[10%] w-[20rem] h-[20rem] rounded-full bg-purple-100 blur-[6rem] animate-pulse"></div>
+        <div
+          className="absolute bottom-[20%] right-[10%] w-[25rem] h-[25rem] rounded-full bg-blue-100 blur-[8rem] animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-[#FFD700] rounded-lg flex items-center justify-center">
-              <Brain className="h-6 w-6 text-[#1A1A1A]" />
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Brain className="h-6 w-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-[#FFD700]">ProFitz</span>
-          </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              ProFitz
+            </span>
+          </Link>
         </div>
 
-        <Card className="bg-[#121212] border-gray-800">
+        <Card className="bg-white border-gray-200 shadow-xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl text-white">Create Your Account</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-2xl text-gray-900">Create Your Account</CardTitle>
+            <CardDescription className="text-gray-600">
               Join ProFitz and start your trading psychology transformation
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <Alert className="border-red-500/50 bg-red-500/10">
-                  <AlertDescription className="text-red-400">{error}</AlertDescription>
+                <Alert className="border-red-200 bg-red-50">
+                  <AlertDescription className="text-red-600">{error}</AlertDescription>
                 </Alert>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-gray-300">
+                <Label htmlFor="name" className="text-gray-700">
                   Full Name
                 </Label>
                 <Input
@@ -116,14 +128,14 @@ export default function SignUp() {
                   type="text"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="bg-[#1A1A1A] border-gray-700 text-white focus:border-[#FFD700] focus:ring-[#FFD700]"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500"
                   placeholder="Enter your full name"
                   disabled={isLoading}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-300">
+                <Label htmlFor="email" className="text-gray-700">
                   Email
                 </Label>
                 <Input
@@ -132,14 +144,14 @@ export default function SignUp() {
                   type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="bg-[#1A1A1A] border-gray-700 text-white focus:border-[#FFD700] focus:ring-[#FFD700]"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500"
                   placeholder="Enter your email"
                   disabled={isLoading}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-gray-300">
+                <Label htmlFor="password" className="text-gray-700">
                   Password
                 </Label>
                 <div className="relative">
@@ -149,7 +161,7 @@ export default function SignUp() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="bg-[#1A1A1A] border-gray-700 text-white focus:border-[#FFD700] focus:ring-[#FFD700] pr-10"
+                    className="bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500 pr-10"
                     placeholder="Create a password"
                     disabled={isLoading}
                   />
@@ -157,7 +169,7 @@ export default function SignUp() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-gray-300"
+                    className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-purple-600"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
                   >
@@ -167,7 +179,7 @@ export default function SignUp() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-gray-300">
+                <Label htmlFor="confirmPassword" className="text-gray-700">
                   Confirm Password
                 </Label>
                 <div className="relative">
@@ -177,7 +189,7 @@ export default function SignUp() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="bg-[#1A1A1A] border-gray-700 text-white focus:border-[#FFD700] focus:ring-[#FFD700] pr-10"
+                    className="bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500 pr-10"
                     placeholder="Confirm your password"
                     disabled={isLoading}
                   />
@@ -185,7 +197,7 @@ export default function SignUp() {
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-gray-300"
+                    className="absolute right-0 top-0 h-full px-3 text-gray-500 hover:text-purple-600"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isLoading}
                   >
@@ -196,7 +208,7 @@ export default function SignUp() {
 
               <Button
                 type="submit"
-                className="w-full bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90 font-semibold"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 font-semibold"
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -211,17 +223,17 @@ export default function SignUp() {
 
               <div className="relative mt-6">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-700" />
+                  <span className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-[#121212] px-2 text-gray-400">Or</span>
+                  <span className="bg-white px-2 text-gray-500">Or</span>
                 </div>
               </div>
 
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-gray-700 text-gray-300 hover:bg-gray-800"
+                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50"
                 onClick={handleDemoSignUp}
                 disabled={isLoading}
               >

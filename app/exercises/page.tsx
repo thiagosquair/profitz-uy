@@ -82,13 +82,13 @@ export default function ExercisesPage() {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case "Beginner":
-        return "bg-green-100 text-green-800"
+        return "bg-green-100 text-green-800 border-green-200"
       case "Intermediate":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-blue-100 text-blue-800 border-blue-200"
       case "Advanced":
-        return "bg-red-100 text-red-800"
+        return "bg-purple-100 text-purple-800 border-purple-200"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 border-gray-200"
     }
   }
 
@@ -112,6 +112,11 @@ export default function ExercisesPage() {
                   variant={selectedCategory === category ? "default" : "outline"}
                   size="sm"
                   onClick={() => setSelectedCategory(category)}
+                  className={
+                    selectedCategory === category
+                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  }
                 >
                   {category}
                 </Button>
@@ -122,14 +127,14 @@ export default function ExercisesPage() {
           {/* Exercises Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredExercises.map((exercise) => (
-              <Card key={exercise.id} className="hover:shadow-lg transition-shadow">
+              <Card key={exercise.id} className="hover:shadow-lg transition-shadow bg-white border-gray-200">
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <Target className="h-6 w-6 text-blue-600" />
                     {exercise.completed && <CheckCircle className="h-5 w-5 text-green-600" />}
                   </div>
-                  <CardTitle className="text-lg">{exercise.title}</CardTitle>
-                  <CardDescription>{exercise.description}</CardDescription>
+                  <CardTitle className="text-lg text-gray-900">{exercise.title}</CardTitle>
+                  <CardDescription className="text-gray-600">{exercise.description}</CardDescription>
                 </CardHeader>
 
                 <CardContent>
@@ -143,14 +148,21 @@ export default function ExercisesPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-sm text-gray-700">
                         <span>Progress</span>
                         <span>{exercise.progress}%</span>
                       </div>
-                      <Progress value={exercise.progress} />
+                      <Progress value={exercise.progress} className="h-2" />
                     </div>
 
-                    <Button className="w-full" variant={exercise.completed ? "outline" : "default"}>
+                    <Button
+                      className={
+                        exercise.completed
+                          ? "w-full border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                          : "w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                      }
+                      variant={exercise.completed ? "outline" : "default"}
+                    >
                       <Play className="mr-2 h-4 w-4" />
                       {exercise.completed ? "Review" : "Start Exercise"}
                     </Button>
@@ -179,7 +191,9 @@ export default function ExercisesPage() {
                     Rate your emotional state and set intentions for today's trading
                   </p>
                 </div>
-                <Button className="bg-blue-600 hover:bg-blue-700">Start Challenge</Button>
+                <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
+                  Start Challenge
+                </Button>
               </div>
             </CardContent>
           </Card>

@@ -34,16 +34,16 @@ export function Navigation() {
   const pathname = usePathname()
 
   return (
-    <div className="w-64 bg-[#0A0F1E] border-r border-[#333] flex flex-col">
+    <div className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
       {/* Logo */}
-      <div className="p-6 border-b border-[#333]">
+      <div className="p-6 border-b border-gray-200">
         <Link href="/dashboard" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 bg-gradient-to-br from-[#FFD700] to-[#FFA000] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Brain className="h-6 w-6 text-[#0A0F1E]" />
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Brain className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-[#FFD700] group-hover:text-[#FFA000] transition-colors">ProFitz</h1>
-            <p className="text-xs text-[#E0E0E0]">Trading Psychology</p>
+            <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">ProFitz</h1>
+            <p className="text-xs text-gray-500">Trading Psychology</p>
           </div>
         </Link>
       </div>
@@ -59,30 +59,30 @@ export function Navigation() {
               className={cn(
                 "flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group",
                 isActive
-                  ? "bg-[#FFD700]/20 text-[#FFD700] border border-[#FFD700]/30"
-                  : "text-[#E0E0E0] hover:bg-[#1A1F2E] hover:text-[#FFD700]",
+                  ? "bg-blue-50 text-blue-700 border border-blue-200"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-blue-600",
               )}
             >
               <item.icon
                 className={cn(
                   "h-5 w-5 transition-transform group-hover:scale-110",
-                  isActive ? "text-[#FFD700]" : "text-[#E0E0E0] group-hover:text-[#FFD700]",
+                  isActive ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600",
                 )}
               />
               <span>{item.name}</span>
-              {isActive && <div className="ml-auto w-2 h-2 bg-[#FFD700] rounded-full animate-pulse"></div>}
+              {isActive && <div className="ml-auto w-2 h-2 bg-blue-600 rounded-full animate-pulse"></div>}
             </Link>
           )
         })}
       </nav>
 
-      <Separator className="bg-[#333]" />
+      <Separator className="bg-gray-200" />
 
       {/* User section */}
       <div className="p-4 space-y-2">
         <Link
           href="/settings"
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-[#E0E0E0] hover:bg-[#1A1F2E] hover:text-[#FFD700] transition-all duration-200 group"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
         >
           <Settings className="h-5 w-5 group-hover:rotate-90 transition-transform" />
           <span>Settings</span>
@@ -90,7 +90,7 @@ export function Navigation() {
 
         <Link
           href="/help"
-          className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-[#E0E0E0] hover:bg-[#1A1F2E] hover:text-[#FFD700] transition-all duration-200 group"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
         >
           <HelpCircle className="h-5 w-5 group-hover:scale-110 transition-transform" />
           <span>Help</span>
@@ -98,7 +98,7 @@ export function Navigation() {
 
         <Button
           variant="ghost"
-          className="w-full justify-start text-[#E0E0E0] hover:bg-[#FF6B6B]/20 hover:text-[#FF6B6B] transition-all duration-200 group"
+          className="w-full justify-start text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all duration-200 group"
         >
           <LogOut className="h-5 w-5 mr-3 group-hover:translate-x-1 transition-transform" />
           Sign Out

@@ -46,48 +46,50 @@ export function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-[#1A1A1A]/95 backdrop-blur-sm shadow-md" : "bg-transparent"
+        isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-200" : "bg-white/80 backdrop-blur-sm"
       }`}
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-[#FFD700] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Brain className="h-6 w-6 text-[#1A1A1A]" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Brain className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-[#FFD700]">ProFitz</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              ProFitz
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {isLandingPage ? (
               <>
-                <a href="#features" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Features
                 </a>
-                <a href="#how-it-works" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <a href="#how-it-works" className="text-gray-700 hover:text-purple-600 transition-colors">
                   How It Works
                 </a>
-                <a href="#testimonials" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Testimonials
                 </a>
-                <a href="#pricing" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">
                   Pricing
                 </a>
               </>
             ) : user ? (
               <>
-                <Link href="/dashboard" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Dashboard
                 </Link>
-                <Link href="/trade-journal" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <Link href="/trade-journal" className="text-gray-700 hover:text-purple-600 transition-colors">
                   Trade Journal
                 </Link>
-                <Link href="/analytics" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <Link href="/analytics" className="text-gray-700 hover:text-blue-600 transition-colors">
                   Analytics
                 </Link>
-                <Link href="/coach" className="text-gray-300 hover:text-[#FFD700] transition-colors">
+                <Link href="/coach" className="text-gray-700 hover:text-purple-600 transition-colors">
                   AI Coach
                 </Link>
               </>
@@ -98,12 +100,14 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-4">
             {user ? (
               <div className="flex items-center space-x-4">
-                <div className="text-gray-300">
-                  <span className="text-[#FFD700]">{user.name}</span>
+                <div className="text-gray-700">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                    {user.name}
+                  </span>
                 </div>
                 <Button
                   variant="outline"
-                  className="border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A]"
+                  className="border-blue-300 text-blue-600 hover:bg-blue-50"
                   onClick={handleSignOut}
                 >
                   Sign Out
@@ -112,13 +116,13 @@ export function Header() {
             ) : (
               <>
                 <Link href="/signin">
-                  <Button variant="ghost" className="text-gray-300 hover:text-[#FFD700]">
+                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600">
                     <LogIn className="mr-2 h-4 w-4" />
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90">
+                  <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
                     <UserPlus className="mr-2 h-4 w-4" />
                     Sign Up
                   </Button>
@@ -128,11 +132,7 @@ export function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-gray-300 hover:text-[#FFD700]"
-            onClick={toggleMenu}
-            aria-label="Toggle menu"
-          >
+          <button className="md:hidden text-gray-700 hover:text-blue-600" onClick={toggleMenu} aria-label="Toggle menu">
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -140,35 +140,35 @@ export function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-[#1A1A1A]/95 backdrop-blur-sm">
+        <div className="md:hidden bg-white/95 backdrop-blur-sm border-t border-gray-200">
           <div className="container mx-auto px-4 py-4">
             <nav className="flex flex-col space-y-4">
               {isLandingPage ? (
                 <>
                   <a
                     href="#features"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Features
                   </a>
                   <a
                     href="#how-it-works"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     How It Works
                   </a>
                   <a
                     href="#testimonials"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Testimonials
                   </a>
                   <a
                     href="#pricing"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Pricing
@@ -178,28 +178,28 @@ export function Header() {
                 <>
                   <Link
                     href="/dashboard"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <Link
                     href="/trade-journal"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Trade Journal
                   </Link>
                   <Link
                     href="/analytics"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Analytics
                   </Link>
                   <Link
                     href="/coach"
-                    className="text-gray-300 hover:text-[#FFD700] transition-colors py-2"
+                    className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     AI Coach
@@ -208,15 +208,18 @@ export function Header() {
               ) : null}
 
               {/* Auth Buttons for Mobile */}
-              <div className="pt-4 border-t border-gray-800">
+              <div className="pt-4 border-t border-gray-200">
                 {user ? (
                   <div className="flex flex-col space-y-4">
-                    <div className="text-gray-300">
-                      Signed in as <span className="text-[#FFD700]">{user.name}</span>
+                    <div className="text-gray-700">
+                      Signed in as{" "}
+                      <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
+                        {user.name}
+                      </span>
                     </div>
                     <Button
                       variant="outline"
-                      className="border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A]"
+                      className="border-blue-300 text-blue-600 hover:bg-blue-50"
                       onClick={handleSignOut}
                     >
                       Sign Out
@@ -225,13 +228,13 @@ export function Header() {
                 ) : (
                   <div className="flex flex-col space-y-4">
                     <Link href="/signin" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full text-gray-300 hover:text-[#FFD700]">
+                      <Button variant="ghost" className="w-full text-gray-700 hover:text-blue-600">
                         <LogIn className="mr-2 h-4 w-4" />
                         Sign In
                       </Button>
                     </Link>
                     <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-                      <Button className="w-full bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90">
+                      <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
                         <UserPlus className="mr-2 h-4 w-4" />
                         Sign Up
                       </Button>

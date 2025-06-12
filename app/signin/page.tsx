@@ -112,12 +112,12 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-[20%] left-[10%] w-[20rem] h-[20rem] rounded-full bg-[#FFD700]/5 blur-[6rem] animate-pulse"></div>
+        <div className="absolute top-[20%] left-[10%] w-[20rem] h-[20rem] rounded-full bg-purple-100 blur-[6rem] animate-pulse"></div>
         <div
-          className="absolute bottom-[20%] right-[10%] w-[25rem] h-[25rem] rounded-full bg-[#FFD700]/5 blur-[8rem] animate-pulse"
+          className="absolute bottom-[20%] right-[10%] w-[25rem] h-[25rem] rounded-full bg-blue-100 blur-[8rem] animate-pulse"
           style={{ animationDelay: "1s" }}
         ></div>
       </div>
@@ -126,32 +126,36 @@ export default function SignInPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center space-x-2 mb-6 group">
-            <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Brain className="h-7 w-7 text-[#1A1A1A]" />
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Brain className="h-7 w-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-[#FFD700]">ProFitz</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              ProFitz
+            </span>
           </Link>
-          <h1 className="text-3xl font-bold text-[#F5F5F5] mb-2">Welcome Back</h1>
-          <p className="text-gray-400">Continue your trading psychology journey</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600">Continue your trading psychology journey</p>
         </div>
 
-        <Card className="bg-[#1A1A1A] border-gray-800 shadow-2xl">
+        <Card className="bg-white border-gray-200 shadow-xl">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center text-[#F5F5F5]">Sign in to your account</CardTitle>
-            <CardDescription className="text-center text-gray-400">
+            <CardTitle className="text-2xl text-center text-gray-900">Sign in to your account</CardTitle>
+            <CardDescription className="text-center text-gray-600">
               Enter your credentials to access your dashboard
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Demo Login Button */}
-            <div className="bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg p-4">
-              <p className="text-sm text-[#FFD700] mb-2 font-medium">🚀 Quick Demo Access</p>
-              <p className="text-xs text-gray-400 mb-3">Try ProFitz instantly with our demo account</p>
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+              <p className="text-sm text-purple-700 mb-2 font-medium">🚀 Quick Demo Access</p>
+              <p className="text-xs text-gray-600 mb-3">Try ProFitz instantly with our demo account</p>
               <Button
                 onClick={handleDemoLogin}
                 variant="outline"
                 size="sm"
-                className="w-full border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A]"
+                className="w-full border-purple-300 text-purple-600 hover:bg-purple-50"
               >
                 Use Demo Credentials
               </Button>
@@ -162,10 +166,10 @@ export default function SignInPage() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-gray-700" />
+                <span className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[#1A1A1A] px-2 text-gray-400">Or continue with email</span>
+                <span className="bg-white px-2 text-gray-500">Or continue with email</span>
               </div>
             </div>
 
@@ -173,7 +177,7 @@ export default function SignInPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-gray-300">
+                <Label htmlFor="email" className="text-gray-700">
                   Email
                 </Label>
                 <Input
@@ -181,13 +185,13 @@ export default function SignInPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
-                  className={`bg-gray-900 border-gray-700 text-[#F5F5F5] focus:border-[#FFD700] transition-colors ${
+                  className={`bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500 transition-colors ${
                     errors.email ? "border-red-500" : ""
                   }`}
                   placeholder="john@example.com"
                 />
                 {errors.email && (
-                  <p className="text-red-400 text-sm flex items-center">
+                  <p className="text-red-500 text-sm flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.email}
                   </p>
@@ -197,10 +201,10 @@ export default function SignInPage() {
               {/* Password */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password" className="text-gray-300">
+                  <Label htmlFor="password" className="text-gray-700">
                     Password
                   </Label>
-                  <Link href="/forgot-password" className="text-sm text-[#FFD700] hover:underline">
+                  <Link href="/forgot-password" className="text-sm text-purple-600 hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -210,7 +214,7 @@ export default function SignInPage() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={(e) => handleInputChange("password", e.target.value)}
-                    className={`bg-gray-900 border-gray-700 text-[#F5F5F5] focus:border-[#FFD700] transition-colors pr-10 ${
+                    className={`bg-white border-gray-300 text-gray-900 focus:border-purple-500 focus:ring-purple-500 transition-colors pr-10 ${
                       errors.password ? "border-red-500" : ""
                     }`}
                     placeholder="Enter your password"
@@ -218,13 +222,13 @@ export default function SignInPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#FFD700] transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-purple-600 transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-red-400 text-sm flex items-center">
+                  <p className="text-red-500 text-sm flex items-center">
                     <AlertCircle className="h-4 w-4 mr-1" />
                     {errors.password}
                   </p>
@@ -237,9 +241,9 @@ export default function SignInPage() {
                   id="rememberMe"
                   checked={formData.rememberMe}
                   onCheckedChange={(checked) => handleInputChange("rememberMe", checked as boolean)}
-                  className="border-gray-600 data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
+                  className="border-gray-400 data-[state=checked]:bg-purple-500 data-[state=checked]:border-purple-500"
                 />
-                <label htmlFor="rememberMe" className="text-sm text-gray-300 cursor-pointer">
+                <label htmlFor="rememberMe" className="text-sm text-gray-700 cursor-pointer">
                   Remember me for 30 days
                 </label>
               </div>
@@ -247,14 +251,14 @@ export default function SignInPage() {
               {/* Submit Button */}
               <Button
                 type="submit"
-                className="w-full bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90 font-semibold py-6 transition-all duration-300 hover:scale-105 group relative overflow-hidden"
+                className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 font-semibold py-6 transition-all duration-300 hover:scale-105 group relative overflow-hidden"
                 disabled={isLoading}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] to-[#FFA000] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center justify-center space-x-2">
                   {isLoading ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-[#1A1A1A] border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Signing you in...</span>
                     </>
                   ) : (
@@ -269,9 +273,9 @@ export default function SignInPage() {
 
             {/* Sign Up Link */}
             <div className="text-center">
-              <p className="text-gray-400">
+              <p className="text-gray-600">
                 Don't have an account?{" "}
-                <Link href="/signup" className="text-[#FFD700] hover:underline font-medium">
+                <Link href="/signup" className="text-purple-600 hover:underline font-medium">
                   Sign up for free
                 </Link>
               </p>
