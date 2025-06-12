@@ -162,6 +162,14 @@ export default function ExercisesPage() {
                           : "w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
                       }
                       variant={exercise.completed ? "outline" : "default"}
+                      onClick={() => {
+                        if (exercise.id === "1") {
+                          window.location.href = "/exercises/emotional-checkin"
+                        } else {
+                          // For other exercises, show coming soon
+                          alert("This exercise will be available in the next update!")
+                        }
+                      }}
                     >
                       <Play className="mr-2 h-4 w-4" />
                       {exercise.completed ? "Review" : "Start Exercise"}
@@ -191,7 +199,10 @@ export default function ExercisesPage() {
                     Rate your emotional state and set intentions for today's trading
                   </p>
                 </div>
-                <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
+                <Button
+                  className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600"
+                  onClick={() => (window.location.href = "/exercises/emotional-checkin")}
+                >
                   Start Challenge
                 </Button>
               </div>

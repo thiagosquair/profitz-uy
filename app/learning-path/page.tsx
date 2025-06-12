@@ -261,6 +261,11 @@ export default function LearningPathPage() {
                               size="sm"
                               disabled={module.status === "locked"}
                               variant={module.status === "completed" ? "outline" : "default"}
+                              onClick={() => {
+                                if (module.status !== "locked") {
+                                  window.location.href = `/learning-path/modules/${module.id}`
+                                }
+                              }}
                             >
                               {module.status === "completed"
                                 ? "Review"

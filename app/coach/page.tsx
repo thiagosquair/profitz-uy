@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Navigation } from "@/components/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -66,11 +66,12 @@ export default function EnhancedCoachPage() {
   ])
 
   // Track chat history for context
-  const [chatHistory, setChatHistory] = useState<{role: "user" | "coach", content: string}[]>([
+  const [chatHistory, setChatHistory] = useState<{ role: "user" | "coach"; content: string }[]>([
     {
       role: "coach",
-      content: "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?"
-    }
+      content:
+        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+    },
   ])
 
   // Mock user context - in a real app, this would come from user profile and activity data
@@ -80,9 +81,9 @@ export default function EnhancedCoachPage() {
     recentActivity: {
       consistency: 78,
       journalEntries: 12,
-      completedExercises: 8
+      completedExercises: 8,
     },
-    knownPatterns: ["Anxiety during high volatility", "Early exits when in profit", "Weekend trading hesitation"]
+    knownPatterns: ["Anxiety during high volatility", "Early exits when in profit", "Weekend trading hesitation"],
   }
 
   const sendMessage = async () => {
@@ -97,13 +98,10 @@ export default function EnhancedCoachPage() {
 
     // Add user message to chat
     setMessages((prev) => [...prev, userMessage])
-    
+
     // Add to chat history for context
-    const updatedChatHistory = [
-      ...chatHistory,
-      { role: "user", content: inputMessage }
-    ].slice(-10) // Keep only last 10 messages for context
-    
+    const updatedChatHistory = [...chatHistory, { role: "user", content: inputMessage }].slice(-10) // Keep only last 10 messages for context
+
     setChatHistory(updatedChatHistory)
     setInputMessage("")
     setIsLoading(true)
@@ -118,7 +116,7 @@ export default function EnhancedCoachPage() {
         body: JSON.stringify({
           message: inputMessage,
           userContext,
-          chatHistory: updatedChatHistory
+          chatHistory: updatedChatHistory,
         }),
       })
 
@@ -127,7 +125,7 @@ export default function EnhancedCoachPage() {
       }
 
       const data = await response.json()
-      
+
       // Create coach response message
       const coachResponse: Message = {
         id: Date.now().toString(),
@@ -136,19 +134,15 @@ export default function EnhancedCoachPage() {
         timestamp: new Date(),
         type: data.type,
       }
-      
+
       // Add coach response to messages
       setMessages((prev) => [...prev, coachResponse])
-      
+
       // Add to chat history
-      setChatHistory([
-        ...updatedChatHistory,
-        { role: "coach", content: data.response }
-      ].slice(-10))
-      
+      setChatHistory([...updatedChatHistory, { role: "coach", content: data.response }].slice(-10))
     } catch (error) {
       console.error("Error getting AI coach response:", error)
-      
+
       // Add error message
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -157,7 +151,7 @@ export default function EnhancedCoachPage() {
         timestamp: new Date(),
         type: "insight",
       }
-      
+
       setMessages((prev) => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
@@ -266,7 +260,7 @@ export default function EnhancedCoachPage() {
                           </div>
                         </div>
                       ))}
-                      
+
                       {isLoading && (
                         <div className="flex justify-start">
                           <div className="flex items-start space-x-2 max-w-[85%]">
@@ -323,7 +317,20 @@ export default function EnhancedCoachPage() {
                       </div>
                       <p className="text-xs leading-relaxed">{insight.description}</p>
                       {insight.actionable && (
-                        <Button size="sm" variant="outline" className="mt-2 text-xs">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2 text-xs"
+                          onClick={() => {
+                            if (insight.type === "risk") {
+                              window.location.href = "/learning-path?focus=risk-management"
+                            } else if (insight.type === "pattern") {
+                              window.location.href = "/analytics"
+                            } else {
+                              window.location.href = "/exercises?category=Emotional%20Regulation"
+                            }
+                          }}
+                        >
                           Take Action
                         </Button>
                       )}
@@ -366,15 +373,30 @@ export default function EnhancedCoachPage() {
                   <CardTitle className="text-lg">Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => (window.location.href = "/exercises/emotional-checkin")}
+                  >
                     <Target className="mr-2 h-4 w-4" />
                     Emotional Check-In
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => (window.location.href = "/analytics")}
+                  >
                     <TrendingUp className="mr-2 h-4 w-4" />
                     View Patterns
                   </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-start"
+                    onClick={() => (window.location.href = "/learning-path")}
+                  >
                     <Lightbulb className="mr-2 h-4 w-4" />
                     Get Recommendations
                   </Button>
