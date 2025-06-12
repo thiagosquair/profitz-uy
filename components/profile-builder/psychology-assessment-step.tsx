@@ -271,39 +271,29 @@ export function PsychologyAssessmentStep({ answers, onAnswer, onComplete }: Psyc
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center space-y-2">
-        <div className="w-24 h-24 mx-auto">
-          <Image 
-            src="/profitz-logo-large.png" 
-            alt="ProFitz Logo" 
-            width={96} 
-            height={96} 
-            className="w-full h-full object-contain"
-          />
-        </div>
-        <h2 className="text-2xl font-bold text-white">Trading Psychology Assessment</h2>
-        <p className="text-gray-300">Help us understand your trading mindset to provide personalized insights</p>
+        <h2 className="text-2xl font-bold text-gray-800">Trading Psychology Assessment</h2>
+        <p className="text-gray-600">Help us understand your trading mindset to provide personalized insights</p>
       </div>
 
       {/* Progress */}
       <div className="space-y-2">
-        <div className="flex justify-between text-sm text-gray-400">
+        <div className="flex justify-between text-sm text-gray-500">
           <span>
             Question {currentQuestionIndex + 1} of {questions.length}
           </span>
           <span>{Math.round(progress)}% Complete</span>
         </div>
-        <Progress value={progress} className="h-2 bg-gray-700">
+        <Progress value={progress} className="h-2 bg-gray-200">
           <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-full" />
         </Progress>
       </div>
 
       {/* Question */}
-      <Card className="bg-gray-800 border-gray-700 p-6 shadow-lg">
+      <Card className="bg-white border-gray-200 p-6 shadow-sm">
         <div className="space-y-4">
-          <div className="text-sm text-blue-400 font-medium">{currentQuestion.category}</div>
-          <h3 className="text-lg font-semibold text-white leading-relaxed">{currentQuestion.question}</h3>
+          <div className="text-sm text-blue-600 font-medium">{currentQuestion.category}</div>
+          <h3 className="text-lg font-semibold text-gray-800 leading-relaxed">{currentQuestion.question}</h3>
 
           {/* Answer Options */}
           <div className="space-y-3 pt-2">
@@ -317,14 +307,14 @@ export function PsychologyAssessmentStep({ answers, onAnswer, onComplete }: Psyc
                   onClick={() => handleAnswerSelect(answerValue)}
                   className={`w-full text-left p-4 rounded-lg border transition-all duration-200 hover:scale-[1.02] ${
                     isSelected
-                      ? "bg-blue-600/20 border-blue-500 text-white"
-                      : "bg-gray-800 border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500"
+                      ? "bg-blue-100 border-blue-500 text-blue-800"
+                      : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-center space-x-3">
                     <div
                       className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-                        isSelected ? "border-blue-500 bg-blue-500" : "border-gray-500"
+                        isSelected ? "border-blue-500 bg-blue-500" : "border-gray-400"
                       }`}
                     >
                       {isSelected && <div className="w-2 h-2 bg-white rounded-full" />}
@@ -344,7 +334,7 @@ export function PsychologyAssessmentStep({ answers, onAnswer, onComplete }: Psyc
           variant="outline"
           onClick={handlePrevious}
           disabled={currentQuestionIndex === 0}
-          className="border-gray-600 text-gray-300 hover:bg-gray-800"
+          className="border-gray-300 text-gray-700 hover:bg-gray-100"
         >
           Previous
         </Button>
