@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import type { TradingInstrument } from "./profile-builder-modal"
 import { ArrowRight, TrendingUp, BarChart2, DollarSign, Bitcoin, LineChart, Package } from "lucide-react"
@@ -31,13 +31,13 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
       value: "Options",
       label: "Options",
       icon: BarChart2,
-      color: "#FFD700",
+      color: "#3B82F6", // Changed to blue
     },
     {
       value: "Forex",
       label: "Forex",
       icon: DollarSign,
-      color: "#FF6B6B",
+      color: "#4F46E5", // Changed to indigo
     },
     {
       value: "Crypto",
@@ -49,7 +49,7 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
       value: "Futures",
       label: "Futures",
       icon: LineChart,
-      color: "#FF9F1C",
+      color: "#8B5CF6", // Changed to purple
     },
     {
       value: "Other",
@@ -61,6 +61,32 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
 
   return (
     <div className="space-y-6">
+      {/* Logo Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center space-x-2">
+          <div className="w-10 h-10">
+            <Image 
+              src="/profitz-logo-large.png" 
+              alt="ProFitz Logo" 
+              width={40} 
+              height={40} 
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <span className="text-lg font-bold text-white">ProFitz</span>
+        </div>
+        <div className="flex space-x-1">
+          {[1, 2, 3, 4, 5].map((step) => (
+            <div 
+              key={step} 
+              className={`w-2 h-2 rounded-full ${
+                step <= 2 ? "bg-blue-500" : step === 3 ? "bg-yellow-500" : "bg-gray-600"
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+
       <div className="text-center mb-2">
         <h2 className="text-2xl font-bold text-white">What are you currently trading?</h2>
         <p className="text-gray-400 mt-2">Select all that apply</p>
@@ -102,7 +128,7 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
 
               <h3 className="text-sm font-medium text-white">{option.label}</h3>
 
-              {isSelected && <div className="absolute top-2 right-2 w-3 h-3 bg-[#FFD700] rounded-full"></div>}
+              {isSelected && <div className="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>}
             </button>
           )
         })}
@@ -112,7 +138,7 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
         <Button
           onClick={onContinue}
           disabled={selectedInstruments.length === 0}
-          className="bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90 font-semibold py-6 px-8 transition-all duration-300 hover:scale-105 disabled:bg-gray-700 disabled:text-gray-400 disabled:hover:scale-100"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 font-semibold py-6 px-8 transition-all duration-300 hover:scale-105 disabled:bg-gray-700 disabled:text-gray-400 disabled:hover:scale-100"
         >
           Continue
           <ArrowRight className="ml-2 h-4 w-4" />
