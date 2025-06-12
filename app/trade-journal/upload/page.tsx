@@ -149,23 +149,37 @@ export default function TradeUploadPage() {
   const uploadImageToBlob = async (file: File): Promise<string> => {
     setIsUploading(true)
     try {
+      console.log("🚀 Starting image upload process...")
+      console.log("📁 File details:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      })
+
       const formData = new FormData()
-      formData.append('file', file)
-      
-      const response = await fetch('/api/upload-image', {
-        method: 'POST',
+      formData.append("file", file)
+
+      console.log("📤 Sending request to /api/upload-image...")
+
+      const response = await fetch("/api/upload-image", {
+        method: "POST",
         body: formData,
       })
-      
+
+      console.log("📨 Response status:", response.status)
+      console.log("📨 Response ok:", response.ok)
+
       if (!response.ok) {
         const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to upload image')
+        console.error("❌ Upload failed:", errorData)
+        throw new Error(errorData.details || errorData.error || "Failed to upload image")
       }
-      
+
       const data = await response.json()
+      console.log("✅ Upload successful:", data)
       return data.url
     } catch (error) {
-      console.error('Error uploading image to Vercel Blob:', error)
+      console.error("💥 Error in uploadImageToBlob:", error)
       throw error
     } finally {
       setIsUploading(false)
@@ -184,10 +198,10 @@ export default function TradeUploadPage() {
 
     try {
       console.log("🚀 Starting trade analysis with OpenAI...")
-      
+
       // First, upload the image to Vercel Blob to get a public URL
       let imageUrl = uploadedImageUrl
-      
+
       if (!imageUrl) {
         console.log("📤 Uploading image to Vercel Blob...")
         imageUrl = await uploadImageToBlob(uploadedImageFile)
@@ -628,9 +642,7 @@ export default function TradeUploadPage() {
                   className="flex items-center space-x-2"
                 >
                   {(isAnalyzing || isUploading) && <Loader2 className="h-4 w-4 animate-spin" />}
-                  <span>
-                    {isUploading ? "Uploading..." : isAnalyzing ? "Analyzing..." : "Analyze with OpenAI"}
-                  </span>
+                  <span>{isUploading ? "Uploading..." : isAnalyzing ? "Analyzing..." : "Analyze with OpenAI"}</span>
                   {!isAnalyzing && !isUploading && <Brain className="ml-2 h-4 w-4" />}
                 </Button>
               </CardFooter>
