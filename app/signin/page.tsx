@@ -1,0 +1,284 @@
+"use client"
+
+import type React from "react"
+
+import { useState } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Brain, Eye, EyeOff, AlertCircle, LogIn } from "lucide-react"
+import { GoogleAuthButton } from "@/components/auth/google-auth-button"
+import { useToast } from "@/hooks/use-toast"
+import { simulateSignIn } from "@/lib/auth-simulation"
+
+export default function SignInPage() {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberMe: false,
+  })
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address"
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Password is required"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!validateForm()) {
+      return
+    }
+
+    setIsLoading(true)
+
+    try {
+      const result = await simulateSignIn(formData.email, formData.password)
+
+      if (result.success) {
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in. Redirecting to your dashboard...",
+        })
+
+        // Redirect to dashboard after successful signin
+        setTimeout(() => {
+          router.push("/dashboard")
+        }, 1500)
+      } else {
+        setErrors({ email: result.error || "Invalid credentials" })
+        toast({
+          title: "Sign in failed",
+          description: result.error || "Invalid email or password. Please try again.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      toast({
+        title: "Sign in failed",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: "" }))
+    }
+  }
+
+  const handleGoogleSuccess = () => {
+    toast({
+      title: "Google sign in successful!",
+      description: "Welcome back to ProFitz. Redirecting to your dashboard...",
+    })
+    setTimeout(() => {
+      router.push("/dashboard")
+    }, 1500)
+  }
+
+  const handleDemoLogin = () => {
+    setFormData({
+      email: "demo@profitz.com",
+      password: "demo123",
+      rememberMe: false,
+    })
+  }
+
+  return (
+    <div className="min-h-screen bg-[#1A1A1A] flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-[20%] left-[10%] w-[20rem] h-[20rem] rounded-full bg-[#FFD700]/5 blur-[6rem] animate-pulse"></div>
+        <div
+          className="absolute bottom-[20%] right-[10%] w-[25rem] h-[25rem] rounded-full bg-[#FFD700]/5 blur-[8rem] animate-pulse"
+          style={{ animationDelay: "1s" }}
+        ></div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link href="/" className="inline-flex items-center space-x-2 mb-6 group">
+            <div className="w-12 h-12 bg-[#FFD700] rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Brain className="h-7 w-7 text-[#1A1A1A]" />
+            </div>
+            <span className="text-2xl font-bold text-[#FFD700]">ProFitz</span>
+          </Link>
+          <h1 className="text-3xl font-bold text-[#F5F5F5] mb-2">Welcome Back</h1>
+          <p className="text-gray-400">Continue your trading psychology journey</p>
+        </div>
+
+        <Card className="bg-[#1A1A1A] border-gray-800 shadow-2xl">
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl text-center text-[#F5F5F5]">Sign in to your account</CardTitle>
+            <CardDescription className="text-center text-gray-400">
+              Enter your credentials to access your dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Demo Login Button */}
+            <div className="bg-[#FFD700]/10 border border-[#FFD700]/30 rounded-lg p-4">
+              <p className="text-sm text-[#FFD700] mb-2 font-medium">🚀 Quick Demo Access</p>
+              <p className="text-xs text-gray-400 mb-3">Try ProFitz instantly with our demo account</p>
+              <Button
+                onClick={handleDemoLogin}
+                variant="outline"
+                size="sm"
+                className="w-full border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#1A1A1A]"
+              >
+                Use Demo Credentials
+              </Button>
+            </div>
+
+            {/* Google Sign In */}
+            <GoogleAuthButton mode="signin" onSuccess={handleGoogleSuccess} />
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-700" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-[#1A1A1A] px-2 text-gray-400">Or continue with email</span>
+              </div>
+            </div>
+
+            {/* Sign In Form */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Email */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-gray-300">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange("email", e.target.value)}
+                  className={`bg-gray-900 border-gray-700 text-[#F5F5F5] focus:border-[#FFD700] transition-colors ${
+                    errors.email ? "border-red-500" : ""
+                  }`}
+                  placeholder="john@example.com"
+                />
+                {errors.email && (
+                  <p className="text-red-400 text-sm flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-gray-300">
+                    Password
+                  </Label>
+                  <Link href="/forgot-password" className="text-sm text-[#FFD700] hover:underline">
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange("password", e.target.value)}
+                    className={`bg-gray-900 border-gray-700 text-[#F5F5F5] focus:border-[#FFD700] transition-colors pr-10 ${
+                      errors.password ? "border-red-500" : ""
+                    }`}
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#FFD700] transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-red-400 text-sm flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              {/* Remember Me */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={(checked) => handleInputChange("rememberMe", checked as boolean)}
+                  className="border-gray-600 data-[state=checked]:bg-[#FFD700] data-[state=checked]:border-[#FFD700]"
+                />
+                <label htmlFor="rememberMe" className="text-sm text-gray-300 cursor-pointer">
+                  Remember me for 30 days
+                </label>
+              </div>
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                className="w-full bg-[#FFD700] text-[#1A1A1A] hover:bg-[#FFD700]/90 font-semibold py-6 transition-all duration-300 hover:scale-105 group relative overflow-hidden"
+                disabled={isLoading}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-[#FFD700] to-[#FFA000] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center space-x-2">
+                  {isLoading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-[#1A1A1A] border-t-transparent rounded-full animate-spin"></div>
+                      <span>Signing you in...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="h-5 w-5" />
+                      <span>Sign In</span>
+                    </>
+                  )}
+                </div>
+              </Button>
+            </form>
+
+            {/* Sign Up Link */}
+            <div className="text-center">
+              <p className="text-gray-400">
+                Don't have an account?{" "}
+                <Link href="/signup" className="text-[#FFD700] hover:underline font-medium">
+                  Sign up for free
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
