@@ -5,7 +5,7 @@ import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { ProfileBuilderProvider } from "@/providers/profile-builder-provider"
 import { QuoteTimer } from "@/components/quote-timer"
-import { I18nProvider } from "@/components/i18nprovider"
+import { I18nProvider } from "@/components/I18nProvider"
 
 const inter = Inter({ subsets: ["latin"] })
 
