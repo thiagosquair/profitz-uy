@@ -9,6 +9,7 @@ interface User {
   experience: string
   completedInitialProfile: boolean
   completedPsychologyAssessment: boolean
+  justRegistered?: boolean // New flag to track fresh registrations
 }
 
 const users: User[] = [
@@ -91,6 +92,7 @@ export async function simulateSignUp(email: string, password: string, name: stri
     experience: "beginner",
     completedInitialProfile: false,
     completedPsychologyAssessment: false,
+    justRegistered: true, // Mark as just registered
   }
 
   users.push(newUser)
@@ -105,6 +107,7 @@ export async function simulateSignUp(email: string, password: string, name: stri
     experience: newUser.experience,
     completedInitialProfile: newUser.completedInitialProfile,
     completedPsychologyAssessment: newUser.completedPsychologyAssessment,
+    justRegistered: true, // Include this flag in session storage
   }
 
   sessionStorage.setItem("currentUser", JSON.stringify(userData))
@@ -147,14 +150,13 @@ export async function simulateSignIn(email: string, password: string) {
     experience: user.experience,
     completedInitialProfile: user.completedInitialProfile,
     completedPsychologyAssessment: user.completedPsychologyAssessment,
+    justRegistered: false, // Never mark as just registered during sign in
   }
 
   sessionStorage.setItem("currentUser", JSON.stringify(userData))
 
-  // Trigger custom event to notify profile builder (only for returning users who haven't completed initial profile)
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new CustomEvent("userSignedIn", { detail: userData }))
-  }
+  // We no longer trigger the userSignedIn event for profile builder
+  // This prevents the profile builder from showing on regular sign-ins
 
   return {
     success: true,
@@ -201,7 +203,8 @@ export function isAuthenticated() {
 // Check if user needs initial profile setup
 export function needsInitialProfile() {
   const user = getCurrentUser()
-  return user ? user.isNewUser && !user.completedInitialProfile : false
+  // Only return true if the user is new AND just registered
+  return user ? user.isNewUser && !user.completedInitialProfile && user.justRegistered === true : false
 }
 
 // Check if user needs psychology assessment
@@ -218,6 +221,7 @@ export function completeInitialProfile() {
       ...user,
       isNewUser: false,
       completedInitialProfile: true,
+      justRegistered: false, // Reset the just registered flag
     }
     sessionStorage.setItem("currentUser", JSON.stringify(updatedUser))
 
@@ -226,6 +230,7 @@ export function completeInitialProfile() {
     if (userIndex !== -1) {
       users[userIndex].isNewUser = false
       users[userIndex].completedInitialProfile = true
+      users[userIndex].justRegistered = false
     }
   }
 }
@@ -257,6 +262,7 @@ export function resetUserProfile() {
       isNewUser: true,
       completedInitialProfile: false,
       completedPsychologyAssessment: false,
+      justRegistered: true, // Set this to true to simulate a fresh registration
     }
     sessionStorage.setItem("currentUser", JSON.stringify(updatedUser))
   }

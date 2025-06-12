@@ -1,177 +1,326 @@
-const AICoachPage = () => {
+"use client"
+
+import { useState } from "react"
+import { Navigation } from "@/components/navigation"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { Send, Brain, TrendingUp, Target, AlertTriangle, Lightbulb } from "lucide-react"
+
+interface Message {
+  id: string
+  content: string
+  sender: "user" | "coach"
+  timestamp: Date
+  type?: "intervention" | "recommendation" | "insight"
+  metadata?: any
+}
+
+interface UserInsight {
+  type: "pattern" | "risk" | "opportunity"
+  title: string
+  description: string
+  confidence: number
+  actionable: boolean
+}
+
+export default function EnhancedCoachPage() {
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "1",
+      content:
+        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+      sender: "coach",
+      timestamp: new Date(),
+      type: "insight",
+    },
+  ])
+  const [inputMessage, setInputMessage] = useState("")
+  const [userInsights, setUserInsights] = useState<UserInsight[]>([
+    {
+      type: "pattern",
+      title: "Monday Morning Dip",
+      description: "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
+      confidence: 0.87,
+      actionable: true,
+    },
+    {
+      type: "opportunity",
+      title: "Reflection Quality Improving",
+      description: "Your journal entries show 35% more self-awareness compared to last month",
+      confidence: 0.92,
+      actionable: false,
+    },
+    {
+      type: "risk",
+      title: "Consistency Risk Detected",
+      description: "Pattern suggests 68% chance of breaking streak in next 3 days without intervention",
+      confidence: 0.74,
+      actionable: true,
+    },
+  ])
+
+  const sendMessage = async () => {
+    if (!inputMessage.trim()) return
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: inputMessage,
+      sender: "user",
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, userMessage])
+    setInputMessage("")
+
+    // Simulate advanced AI response with behavioral analysis
+    setTimeout(() => {
+      const coachResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        content: getAdvancedCoachResponse(inputMessage),
+        sender: "coach",
+        timestamp: new Date(),
+        type: determineResponseType(inputMessage),
+      }
+      setMessages((prev) => [...prev, coachResponse])
+    }, 1500)
+  }
+
+  const getAdvancedCoachResponse = (userInput: string): string => {
+    const input = userInput.toLowerCase()
+
+    if (input.includes("anxious") || input.includes("worried")) {
+      return "I understand you're feeling anxious. Based on your behavioral patterns, this typically happens when market volatility increases. Let's work through the CALM technique: C - Center yourself with deep breathing, A - Acknowledge the emotion without judgment, L - Locate the physical sensation, M - Move forward with intention. Your anxiety response has decreased 15% since last month, showing real progress. Would you like me to guide you through a specific exercise for managing trading anxiety?"
+    }
+
+    if (input.includes("consistency") || input.includes("habit")) {
+      return "Your consistency data shows interesting patterns. You've maintained a 78% completion rate over the past month, with strongest performance on Tuesday-Thursday (89% avg) and challenges on weekends (52% avg). The predictive model suggests focusing on micro-habits during low-energy periods. I recommend the '2-minute rule' for weekend engagement - just 2 minutes of reflection can maintain your neural pathways. Shall we design a personalized weekend routine?"
+    }
+
+    if (input.includes("progress") || input.includes("improvement")) {
+      return "Your progress metrics are encouraging! Emotional regulation skills have improved 34% based on assessment scores and reflection quality analysis. The consistency tracker shows you're in the 'sustainable growth' zone. However, I notice risk management psychology could use attention - your confidence in risk scenarios has plateaued. This is normal at your development stage. Ready to tackle some advanced risk psychology exercises?"
+    }
+
+    return "I'm analyzing your question in the context of your behavioral patterns and current development stage. Based on your profile as an intermediate learner with strong self-awareness but developing emotional regulation skills, I'd recommend focusing on the intersection of market psychology and personal triggers. Your recent activity suggests you're ready for more advanced concepts. What specific aspect of trading psychology feels most challenging right now?"
+  }
+
+  const determineResponseType = (input: string): "intervention" | "recommendation" | "insight" => {
+    if (input.toLowerCase().includes("anxious") || input.toLowerCase().includes("struggling")) {
+      return "intervention"
+    }
+    if (input.toLowerCase().includes("what should") || input.toLowerCase().includes("recommend")) {
+      return "recommendation"
+    }
+    return "insight"
+  }
+
+  const getInsightIcon = (type: string) => {
+    switch (type) {
+      case "pattern":
+        return <TrendingUp className="h-4 w-4" />
+      case "risk":
+        return <AlertTriangle className="h-4 w-4" />
+      case "opportunity":
+        return <Lightbulb className="h-4 w-4" />
+      default:
+        return <Target className="h-4 w-4" />
+    }
+  }
+
+  const getInsightColor = (type: string) => {
+    switch (type) {
+      case "pattern":
+        return "bg-blue-100 text-blue-800 border-blue-200"
+      case "risk":
+        return "bg-red-100 text-red-800 border-red-200"
+      case "opportunity":
+        return "bg-green-100 text-green-800 border-green-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
+
   return (
-    <div className="bg-gray-50 min-h-screen py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="lg:text-center">
-          <h2 className="text-base text-blue-600 font-semibold tracking-wide uppercase">AI Coach</h2>
-          <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            Your Personalized AI Learning Companion
-          </p>
-          <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-            Unlock your full potential with our AI-powered coach. Get personalized guidance, track your progress, and
-            achieve your learning goals.
-          </p>
-        </div>
+    <div className="flex min-h-screen bg-gray-50">
+      <Navigation />
 
-        <div className="mt-10">
-          <dl className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
-            <div className="relative">
-              <dt>
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  {/* Heroicon name: outline/globe-alt */}
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-3-1.5m-5.707 1.707l-1.414-1.414m2.828 2.828l-1.414 1.414m2.828-1.414l1.414 1.414m-1.414-2.828l1.414-1.414"
+      <main className="flex-1 p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Psychology Coach</h1>
+            <p className="text-gray-600">Advanced behavioral analysis and personalized guidance</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Chat Interface */}
+            <div className="lg:col-span-2">
+              <Card className="h-[600px] flex flex-col">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Brain className="mr-2 h-5 w-5 text-blue-600" />
+                    Behavioral Analysis Coach
+                  </CardTitle>
+                  <CardDescription>
+                    AI-powered coaching with pattern recognition and predictive insights
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="flex-1 flex flex-col">
+                  <ScrollArea className="flex-1 pr-4 mb-4">
+                    <div className="space-y-4">
+                      {messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                        >
+                          <div
+                            className={`flex items-start space-x-2 max-w-[85%] ${
+                              message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                            }`}
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{message.sender === "user" ? "U" : "AI"}</AvatarFallback>
+                            </Avatar>
+                            <div
+                              className={`rounded-lg p-4 ${
+                                message.sender === "user"
+                                  ? "bg-blue-600 text-white"
+                                  : "bg-white border border-gray-200 text-gray-900"
+                              }`}
+                            >
+                              {message.type && message.sender === "coach" && (
+                                <div className="flex items-center mb-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-xs ${
+                                      message.type === "intervention"
+                                        ? "border-red-300 text-red-700"
+                                        : message.type === "recommendation"
+                                          ? "border-blue-300 text-blue-700"
+                                          : "border-green-300 text-green-700"
+                                    }`}
+                                  >
+                                    {message.type}
+                                  </Badge>
+                                </div>
+                              )}
+                              <p className="text-sm leading-relaxed">{message.content}</p>
+                              <p
+                                className={`text-xs mt-2 ${
+                                  message.sender === "user" ? "text-blue-100" : "text-gray-500"
+                                }`}
+                              >
+                                {message.timestamp.toLocaleTimeString()}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Describe your current trading psychology challenges..."
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+                      className="flex-1"
                     />
-                  </svg>
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Personalized Learning Paths</p>
-              </dt>
-              <dd className="mt-2 ml-16 text-base text-gray-500">
-                Our AI analyzes your strengths and weaknesses to create a customized learning path tailored to your
-                specific needs.
-              </dd>
+                    <Button onClick={sendMessage}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
-            <div className="relative">
-              <dt>
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  {/* Heroicon name: outline/scale */}
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 6l3 1m0 0l-3 9a5.166 5.166 0 005 1.5h9.43a5.166 5.166 0 005-1.5l-3-9m0 0l3-1m-3 1l3 9a5.166 5.166 0 01-5 1.5H6.57a5.166 5.166 0 01-5-1.5l3-9"
-                    />
-                  </svg>
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Real-time Progress Tracking</p>
-              </dt>
-              <dd className="mt-2 ml-16 text-base text-gray-500">
-                Monitor your progress with detailed analytics and visualizations. Stay motivated and see how far you've
-                come.
-              </dd>
-            </div>
+            {/* Insights Panel */}
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Behavioral Insights</CardTitle>
+                  <CardDescription>AI-detected patterns and recommendations</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {userInsights.map((insight, index) => (
+                    <div key={index} className={`p-3 rounded-lg border ${getInsightColor(insight.type)}`}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center">
+                          {getInsightIcon(insight.type)}
+                          <span className="ml-2 font-medium text-sm">{insight.title}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs">
+                          {Math.round(insight.confidence * 100)}%
+                        </Badge>
+                      </div>
+                      <p className="text-xs leading-relaxed">{insight.description}</p>
+                      {insight.actionable && (
+                        <Button size="sm" variant="outline" className="mt-2 text-xs">
+                          Take Action
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
 
-            <div className="relative">
-              <dt>
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  {/* Heroicon name: outline/lightning-bolt */}
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Adaptive Learning Technology</p>
-              </dt>
-              <dd className="mt-2 ml-16 text-base text-gray-500">
-                Our AI adapts to your learning style and pace, providing the right challenges at the right time to
-                maximize your learning efficiency.
-              </dd>
-            </div>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Progress Metrics</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Emotional Regulation</span>
+                      <span>78%</span>
+                    </div>
+                    <Progress value={78} />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Consistency Score</span>
+                      <span>85%</span>
+                    </div>
+                    <Progress value={85} />
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>Risk Psychology</span>
+                      <span>62%</span>
+                    </div>
+                    <Progress value={62} />
+                  </div>
+                </CardContent>
+              </Card>
 
-            <div className="relative">
-              <dt>
-                <div className="absolute flex items-center justify-center h-12 w-12 rounded-md bg-blue-500 text-white">
-                  {/* Heroicon name: outline/annotation */}
-                  <svg
-                    className="h-6 w-6"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M7 8h10M7 12h4m14-1a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <p className="ml-16 text-lg leading-6 font-medium text-gray-900">Instant Feedback and Support</p>
-              </dt>
-              <dd className="mt-2 ml-16 text-base text-gray-500">
-                Get instant feedback on your progress and access 24/7 support from our AI coach.
-              </dd>
-            </div>
-          </dl>
-        </div>
-      </div>
-
-      {/* Chat Interface */}
-      <div className="mt-12 bg-white rounded-lg shadow-md p-6 max-w-4xl mx-auto border border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Chat with your AI Coach</h3>
-        <div className="border border-gray-200 rounded-md p-4 h-64 overflow-y-auto bg-gray-50">
-          {/* Chat messages will go here */}
-          <p className="text-gray-700">Welcome! How can I help you today?</p>
-        </div>
-        <div className="mt-4">
-          <input
-            type="text"
-            className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
-            placeholder="Type your message..."
-          />
-          <button className="mt-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Send
-          </button>
-        </div>
-      </div>
-
-      {/* Call to Action */}
-      <div className="bg-white py-12 mt-12">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 sm:flex sm:items-center sm:justify-between">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">Ready to get started?</h2>
-          <p className="mt-8 text-base text-gray-500 sm:mt-0 sm:ml-5">
-            Start your personalized learning journey today.
-          </p>
-          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-            <div className="inline-flex rounded-md shadow">
-              <a
-                href="#"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
-              >
-                Get started
-              </a>
-            </div>
-            <div className="ml-3 inline-flex rounded-md shadow">
-              <a
-                href="#"
-                className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200"
-              >
-                Learn more
-              </a>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Actions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <Target className="mr-2 h-4 w-4" />
+                    Emotional Check-In
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    View Patterns
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <Lightbulb className="mr-2 h-4 w-4" />
+                    Get Recommendations
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
-
-export default AICoachPage

@@ -50,6 +50,7 @@ export function ProfileBuilderProvider({ children }: { children: ReactNode }) {
       }, 500)
     }
 
+    // Only listen for userSignedUp events, not userSignedIn
     window.addEventListener("userSignedUp", handleUserSignedUp)
 
     return () => {
