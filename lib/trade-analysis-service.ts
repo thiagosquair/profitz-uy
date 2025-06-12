@@ -64,30 +64,9 @@ export interface TradePattern {
 
 export class TradeAnalysisService {
   private marketDataService: MarketDataService
-  private hasOpenAIKey: boolean
-  private apiKey: string | null
 
   constructor() {
     this.marketDataService = new MarketDataService()
-
-    // Check for API key in both server and client environments
-    this.apiKey = null
-
-    // Try to get the API key from different sources
-    if (typeof window === "undefined") {
-      // Server-side
-      this.apiKey = process.env.OPENAI_API_KEY || null
-    } else {
-      // Client-side - check if it's available as a public env var
-      this.apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || null
-    }
-
-    this.hasOpenAIKey = !!this.apiKey
-
-    console.log("🔑 TradeAnalysisService initialized:")
-    console.log("- Environment:", typeof window === "undefined" ? "server" : "client")
-    console.log("- API Key available:", this.hasOpenAIKey)
-    console.log("- API Key length:", this.apiKey ? this.apiKey.length : 0)
   }
 
   async analyzeTradeImage(
@@ -96,11 +75,17 @@ export class TradeAnalysisService {
     tradeDetails: Partial<TradeDetails>,
     includeMarketContext = true,
   ): Promise<AIAnalysis> {
-    console.log("🤖 Starting trade analysis...")
+    console.log("🤖 Starting OpenAI trade analysis...")
     console.log("📊 Trade details:", tradeDetails)
     console.log("🧠 Emotional state:", emotionalState)
-    console.log("🔑 OpenAI API available:", this.hasOpenAIKey)
-    console.log("🖼️ Image URL:", imageUrl.substring(0, 50) + "...")
+
+    // Check for API key
+    const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY
+    if (!apiKey) {
+      throw new Error("OpenAI API key not found. Please add NEXT_PUBLIC_OPENAI_API_KEY to your environment variables.")
+    }
+
+    console.log("🔑 OpenAI API key found:", apiKey.substring(0, 10) + "...")
 
     // Get market context if requested and symbol/timeframe are provided
     let marketContext: MarketContext | undefined
@@ -117,26 +102,8 @@ export class TradeAnalysisService {
       }
     }
 
-    // Try OpenAI analysis first, fall back to simulated analysis
-    if (this.hasOpenAIKey && this.apiKey) {
-      try {
-        console.log("🚀 Attempting OpenAI analysis...")
-        return await this.performOpenAIAnalysis(imageUrl, emotionalState, tradeDetails, marketContext)
-      } catch (error) {
-        console.error("❌ OpenAI analysis failed:", error)
-        console.error("Error details:", error instanceof Error ? error.message : String(error))
-
-        // Return simulated analysis with error info
-        const simulatedAnalysis = await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
-        simulatedAnalysis.debugInfo = `OpenAI analysis failed: ${error instanceof Error ? error.message : String(error)}`
-        return simulatedAnalysis
-      }
-    } else {
-      console.log("⚠️ OpenAI API key not found, using simulated analysis")
-      const simulatedAnalysis = await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
-      simulatedAnalysis.debugInfo = "OpenAI API key not configured"
-      return simulatedAnalysis
-    }
+    // Perform OpenAI analysis - no fallback
+    return await this.performOpenAIAnalysis(imageUrl, emotionalState, tradeDetails, marketContext)
   }
 
   private async performOpenAIAnalysis(
@@ -146,44 +113,37 @@ export class TradeAnalysisService {
     marketContext?: MarketContext,
   ): Promise<AIAnalysis> {
     console.log("🔍 Performing OpenAI Vision API analysis...")
-    console.log("🔑 Using API key:", this.apiKey?.substring(0, 10) + "...")
 
     try {
-      // Dynamic import to avoid issues when API key is not available
-      const { generateText } = await import("ai")
-      const { openai } = await import("@ai-sdk/openai")
-
-      console.log("📦 AI SDK modules loaded successfully")
-
-      // Create OpenAI client with explicit API key
-      const openaiClient = openai({
-        apiKey: this.apiKey!,
-      })
-
-      console.log("🤖 OpenAI client created, making API call...")
-
-      const { text } = await generateText({
-        model: openaiClient("gpt-4o"),
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert trading psychologist and technical analyst with 20+ years of experience. 
-            
-            Your task is to analyze trading chart screenshots and provide comprehensive insights that combine:
-            1. Technical analysis of the chart patterns, indicators, and price action
-            2. Psychological analysis based on the trader's emotional state
-            3. Risk management assessment
-            4. Actionable improvement suggestions
-            
-            Always provide specific, actionable insights that will help improve trading performance.
-            Focus on both the technical setup and the psychological factors that influenced the trade.`,
-          },
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Please analyze this trading chart screenshot and provide a comprehensive analysis.
+      // Use fetch directly to call OpenAI API
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert trading psychologist and technical analyst with 20+ years of experience. 
+              
+              Your task is to analyze trading chart screenshots and provide comprehensive insights that combine:
+              1. Technical analysis of the chart patterns, indicators, and price action
+              2. Psychological analysis based on the trader's emotional state
+              3. Risk management assessment
+              4. Actionable improvement suggestions
+              
+              Always provide specific, actionable insights that will help improve trading performance.
+              Focus on both the technical setup and the psychological factors that influenced the trade.`,
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: `Please analyze this trading chart screenshot and provide a comprehensive analysis.
 
 TRADE CONTEXT:
 - Symbol: ${tradeDetails.symbol || "Not specified"}
@@ -240,22 +200,37 @@ PATTERN RECOGNITION:
 - What recurring themes should the trader watch for?
 
 Provide detailed, specific insights that will genuinely help this trader improve their performance.`,
-              },
-              {
-                type: "image",
-                image: imageUrl,
-              },
-            ],
-          },
-        ],
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: imageUrl,
+                  },
+                },
+              ],
+            },
+          ],
+          max_tokens: 2000,
+        }),
       })
 
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`OpenAI API error: ${response.status} - ${errorData.error?.message || "Unknown error"}`)
+      }
+
+      const data = await response.json()
+      const aiText = data.choices[0]?.message?.content
+
+      if (!aiText) {
+        throw new Error("No response from OpenAI API")
+      }
+
       console.log("✅ OpenAI analysis completed successfully")
-      console.log("📝 Raw AI response length:", text.length)
-      console.log("📝 Response preview:", text.substring(0, 200) + "...")
+      console.log("📝 Raw AI response length:", aiText.length)
 
       // Parse the AI response into structured format
-      const analysis = this.parseAIResponse(text, marketContext)
+      const analysis = this.parseAIResponse(aiText, marketContext)
       analysis.analysisMethod = "openai"
       analysis.debugInfo = "OpenAI analysis completed successfully"
 
@@ -263,309 +238,8 @@ Provide detailed, specific insights that will genuinely help this trader improve
       return analysis
     } catch (error) {
       console.error("💥 OpenAI API Error:", error)
-
-      // Log more detailed error information
-      if (error instanceof Error) {
-        console.error("Error name:", error.name)
-        console.error("Error message:", error.message)
-        console.error("Error stack:", error.stack)
-      }
-
-      throw error
+      throw new Error(`OpenAI analysis failed: ${error instanceof Error ? error.message : "Unknown error"}`)
     }
-  }
-
-  private async performSimulatedAnalysis(
-    emotionalState: EmotionalState,
-    tradeDetails: Partial<TradeDetails>,
-    marketContext?: MarketContext,
-  ): Promise<AIAnalysis> {
-    console.log("🎭 Performing simulated AI analysis...")
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    // Generate contextual analysis based on actual data
-    const technicalObservations = this.generateTechnicalObservations(tradeDetails)
-    const psychologicalInsights = this.generatePsychologicalInsights(emotionalState)
-    const improvementSuggestions = this.generateImprovementSuggestions(emotionalState, tradeDetails)
-    const patternRecognition = this.generatePatternRecognition(emotionalState, tradeDetails)
-
-    // Generate market context insights if available
-    const marketContextInsights = marketContext
-      ? [
-          `Trade occurred during ${marketContext.volatility.isHigh ? "high" : "normal"} market volatility (${marketContext.volatility.value}%)`,
-          `Market trend: ${marketContext.trend.direction} (Strength: ${marketContext.trend.strength}%)`,
-          `Key levels: ${marketContext.keyLevels.map((l) => `${l.type} at ${l.price}`).join(", ")}`,
-          ...marketContext.indicators.map((i) => `${i.name}: ${i.value} (${i.interpretation})`),
-        ]
-      : undefined
-
-    const analysis: AIAnalysis = {
-      summary: this.generateSummary(emotionalState, tradeDetails),
-      technicalObservations,
-      psychologicalInsights,
-      improvementSuggestions,
-      patternRecognition,
-      confidenceScore: this.calculateConfidenceScore(emotionalState, tradeDetails),
-      riskManagementAssessment: this.generateRiskAssessment(emotionalState, tradeDetails),
-      marketContextInsights,
-      analysisMethod: "simulated",
-      debugInfo: "Using simulated analysis - OpenAI not available",
-    }
-
-    console.log("✅ Simulated analysis completed")
-    return analysis
-  }
-
-  private generateTechnicalObservations(tradeDetails: Partial<TradeDetails>): string[] {
-    const observations = []
-
-    if (tradeDetails.symbol) {
-      observations.push(`Analysis of ${tradeDetails.symbol} ${tradeDetails.direction || "trade"} position`)
-    }
-
-    if (tradeDetails.entryPrice && tradeDetails.exitPrice) {
-      const priceDiff = tradeDetails.exitPrice - tradeDetails.entryPrice
-      const direction = tradeDetails.direction === "long" ? "bullish" : "bearish"
-      observations.push(
-        `Entry at ${tradeDetails.entryPrice}, exit at ${tradeDetails.exitPrice} (${priceDiff > 0 ? "profit" : "loss"} of ${Math.abs(priceDiff).toFixed(5)})`,
-      )
-      observations.push(`Trade aligned with ${direction} bias based on entry/exit levels`)
-    }
-
-    if (tradeDetails.strategy) {
-      observations.push(`${tradeDetails.strategy} strategy execution shows structured approach`)
-    }
-
-    if (tradeDetails.setupType) {
-      observations.push(`${tradeDetails.setupType} setup type indicates pattern-based trading`)
-    }
-
-    if (tradeDetails.riskRewardRatio) {
-      observations.push(
-        `Risk-reward ratio of ${tradeDetails.riskRewardRatio}:1 ${tradeDetails.riskRewardRatio >= 2 ? "shows good" : "could improve"} risk management`,
-      )
-    }
-
-    if (tradeDetails.timeframe) {
-      observations.push(
-        `${tradeDetails.timeframe} timeframe analysis suggests ${this.getTimeframeInsight(tradeDetails.timeframe)}`,
-      )
-    }
-
-    return observations.length > 0
-      ? observations
-      : ["Chart analysis shows price action patterns", "Entry and exit levels identified", "Technical setup evaluated"]
-  }
-
-  private generatePsychologicalInsights(emotionalState: EmotionalState): string[] {
-    const insights = []
-
-    // Primary emotion analysis
-    insights.push(
-      `Primary emotion of ${emotionalState.primaryEmotion} at ${emotionalState.intensity}/10 intensity ${this.getEmotionImpact(emotionalState.primaryEmotion, emotionalState.intensity)}`,
-    )
-
-    // Mental clarity impact
-    if (emotionalState.mentalClarity <= 5) {
-      insights.push(`Low mental clarity (${emotionalState.mentalClarity}/10) likely impaired decision-making quality`)
-    } else if (emotionalState.mentalClarity >= 8) {
-      insights.push(`High mental clarity (${emotionalState.mentalClarity}/10) supported clear thinking and analysis`)
-    } else {
-      insights.push(
-        `Moderate mental clarity (${emotionalState.mentalClarity}/10) provided adequate decision-making capacity`,
-      )
-    }
-
-    // Stress level analysis
-    if (emotionalState.stressLevel >= 7) {
-      insights.push(
-        `High stress level (${emotionalState.stressLevel}/10) may have triggered fight-or-flight responses affecting trade execution`,
-      )
-    } else if (emotionalState.stressLevel <= 3) {
-      insights.push(
-        `Low stress level (${emotionalState.stressLevel}/10) created optimal conditions for rational decision-making`,
-      )
-    } else {
-      insights.push(
-        `Moderate stress level (${emotionalState.stressLevel}/10) maintained alertness without overwhelming anxiety`,
-      )
-    }
-
-    // Confidence analysis
-    if (emotionalState.confidence <= 4) {
-      insights.push(`Low confidence (${emotionalState.confidence}/10) may have led to hesitation or premature exits`)
-    } else if (emotionalState.confidence >= 8) {
-      insights.push(
-        `High confidence (${emotionalState.confidence}/10) could indicate overconfidence or ignoring warning signs`,
-      )
-    } else {
-      insights.push(`Balanced confidence (${emotionalState.confidence}/10) suggests appropriate self-assessment`)
-    }
-
-    // Secondary emotions
-    if (emotionalState.secondaryEmotions.length > 0) {
-      insights.push(
-        `Secondary emotions (${emotionalState.secondaryEmotions.join(", ")}) added complexity to decision-making process`,
-      )
-    }
-
-    return insights
-  }
-
-  private generateImprovementSuggestions(
-    emotionalState: EmotionalState,
-    tradeDetails: Partial<TradeDetails>,
-  ): string[] {
-    const suggestions = []
-
-    // Emotional regulation suggestions
-    if (emotionalState.intensity >= 7) {
-      suggestions.push("Practice breathing techniques or meditation before trading when emotional intensity is high")
-    }
-
-    if (emotionalState.stressLevel >= 7) {
-      suggestions.push("Implement stress management protocols: reduce position size when stress exceeds 6/10")
-    }
-
-    if (emotionalState.mentalClarity <= 5) {
-      suggestions.push("Avoid trading when mental clarity is below 6/10; wait for better mental state")
-    }
-
-    if (emotionalState.confidence <= 4) {
-      suggestions.push("Build confidence through backtesting and paper trading before risking capital")
-    } else if (emotionalState.confidence >= 8) {
-      suggestions.push("Create overconfidence checks: review analysis twice when confidence exceeds 7/10")
-    }
-
-    // Technical suggestions
-    if (!tradeDetails.riskRewardRatio || tradeDetails.riskRewardRatio < 1.5) {
-      suggestions.push("Target minimum 1.5:1 risk-reward ratio for better long-term profitability")
-    }
-
-    if (!tradeDetails.strategy) {
-      suggestions.push("Define and document your trading strategy for each trade to improve consistency")
-    }
-
-    // Process improvements
-    suggestions.push("Continue documenting emotional states to identify patterns and triggers")
-    suggestions.push("Set predetermined exit rules to reduce emotional decision-making during trades")
-
-    return suggestions
-  }
-
-  private generatePatternRecognition(emotionalState: EmotionalState, tradeDetails: Partial<TradeDetails>): string[] {
-    const patterns = []
-
-    // Emotional patterns
-    if (emotionalState.primaryEmotion === "anxiety" && emotionalState.intensity >= 6) {
-      patterns.push("High-anxiety trading pattern detected - monitor for premature exits or missed opportunities")
-    }
-
-    if (emotionalState.confidence >= 8 && emotionalState.stressLevel <= 3) {
-      patterns.push("Optimal performance zone identified - document conditions that led to this state")
-    }
-
-    if (emotionalState.stressLevel >= 7 && emotionalState.mentalClarity <= 5) {
-      patterns.push("Stress-impaired decision making pattern - consider trading break when both metrics are poor")
-    }
-
-    // Trading patterns
-    if (tradeDetails.direction && tradeDetails.strategy) {
-      patterns.push(
-        `${tradeDetails.direction} ${tradeDetails.strategy} pattern - track success rate of this combination`,
-      )
-    }
-
-    if (tradeDetails.riskRewardRatio && tradeDetails.riskRewardRatio >= 2) {
-      patterns.push("Conservative risk management pattern - maintain this approach for long-term success")
-    }
-
-    // Behavioral patterns
-    patterns.push(`${emotionalState.primaryEmotion}-driven trading behavior requires monitoring for consistency`)
-
-    return patterns
-  }
-
-  private generateSummary(emotionalState: EmotionalState, tradeDetails: Partial<TradeDetails>): string {
-    const symbol = tradeDetails.symbol || "trade"
-    const direction = tradeDetails.direction || "position"
-    const emotion = emotionalState.primaryEmotion
-    const intensity = emotionalState.intensity
-
-    return `Analysis of ${symbol} ${direction} taken with ${emotion} (${intensity}/10 intensity). ${this.getSummaryInsight(emotion, intensity, emotionalState.confidence)}`
-  }
-
-  private calculateConfidenceScore(emotionalState: EmotionalState, tradeDetails: Partial<TradeDetails>): number {
-    let score = 0.5 // Base score
-
-    // Adjust based on emotional state
-    if (emotionalState.mentalClarity >= 7) score += 0.1
-    if (emotionalState.stressLevel <= 5) score += 0.1
-    if (emotionalState.confidence >= 6 && emotionalState.confidence <= 8) score += 0.1
-
-    // Adjust based on trade details
-    if (tradeDetails.riskRewardRatio && tradeDetails.riskRewardRatio >= 1.5) score += 0.1
-    if (tradeDetails.strategy) score += 0.05
-    if (tradeDetails.entryPrice && tradeDetails.exitPrice) score += 0.05
-
-    return Math.min(0.95, Math.max(0.3, score))
-  }
-
-  private generateRiskAssessment(emotionalState: EmotionalState, tradeDetails: Partial<TradeDetails>): string {
-    const riskFactors = []
-
-    if (emotionalState.stressLevel >= 7) {
-      riskFactors.push("high stress levels")
-    }
-    if (emotionalState.confidence <= 4) {
-      riskFactors.push("low confidence")
-    }
-    if (emotionalState.mentalClarity <= 5) {
-      riskFactors.push("impaired mental clarity")
-    }
-
-    const riskLevel = riskFactors.length >= 2 ? "elevated" : riskFactors.length === 1 ? "moderate" : "acceptable"
-
-    return `Risk assessment: ${riskLevel} risk level based on emotional state. ${
-      tradeDetails.riskRewardRatio
-        ? `Risk-reward ratio of ${tradeDetails.riskRewardRatio}:1 ${tradeDetails.riskRewardRatio >= 1.5 ? "supports" : "undermines"} risk management.`
-        : "Consider defining risk-reward parameters for better assessment."
-    }`
-  }
-
-  // Helper methods
-  private getEmotionImpact(emotion: string, intensity: number): string {
-    if (intensity >= 8) return "likely significantly impacted decision-making"
-    if (intensity >= 6) return "moderately influenced trade execution"
-    if (intensity >= 4) return "had some impact on trading decisions"
-    return "had minimal impact on trade execution"
-  }
-
-  private getTimeframeInsight(timeframe: string): string {
-    const insights: Record<string, string> = {
-      "1m": "scalping approach with high-frequency decision making",
-      "5m": "short-term momentum trading focus",
-      "15m": "intraday swing trading methodology",
-      "1H": "balanced intraday to short-term swing approach",
-      "4H": "swing trading with multi-day holding periods",
-      Daily: "position trading with longer-term perspective",
-    }
-    return insights[timeframe] || "systematic timeframe-based approach"
-  }
-
-  private getSummaryInsight(emotion: string, intensity: number, confidence: number): string {
-    if (emotion === "anxiety" && intensity >= 7) {
-      return "High anxiety may have led to suboptimal decision-making and early exits."
-    }
-    if (emotion === "confidence" && intensity >= 8) {
-      return "High confidence supported decisive action but requires monitoring for overconfidence."
-    }
-    if (confidence <= 4) {
-      return "Low confidence suggests need for additional preparation and risk management."
-    }
-    return "Emotional state analysis provides insights for future trading improvements."
   }
 
   private parseAIResponse(aiText: string, marketContext?: MarketContext): AIAnalysis {
@@ -716,7 +390,7 @@ Provide detailed, specific insights that will genuinely help this trader improve
       {
         pattern: "Optimal Performance Zone",
         description:
-          "Your most profitable trades occur when confidence is 6-8 and stress is below 5, regardless of market conditions.",
+          "Your most profitable trades trades occur when confidence is 6-8 and stress is below 5, regardless of market conditions.",
         frequency: 15,
         emotionalCorrelation: [
           { emotion: "confidence", correlation: 0.65 },

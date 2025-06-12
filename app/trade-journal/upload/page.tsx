@@ -13,10 +13,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { Upload, ArrowRight, X, Plus, Info, Brain } from "lucide-react"
+import { Upload, ArrowRight, X, Plus, Info, Brain, AlertCircle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TradeAnalysisService } from "@/lib/trade-analysis-service"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export default function TradeUploadPage() {
   const router = useRouter()
@@ -24,6 +25,7 @@ export default function TradeUploadPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
   const [includeMarketContext, setIncludeMarketContext] = useState(true)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
 
   // Form state
   const [formData, setFormData] = useState({
@@ -36,7 +38,7 @@ export default function TradeUploadPage() {
     confidence: [5],
     emotionalNotes: "",
 
-    // Trade details
+    // Trade details - now required
     symbol: "",
     timeframe: "1H",
     direction: "long",
@@ -93,15 +95,61 @@ export default function TradeUploadPage() {
 
   const updateFormData = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear validation errors when user starts typing
+    if (validationErrors.length > 0) {
+      setValidationErrors([])
+    }
+  }
+
+  const validateTradeDetails = (): boolean => {
+    const errors: string[] = []
+
+    if (!formData.symbol.trim()) {
+      errors.push("Symbol is required")
+    }
+    if (!formData.entryPrice.trim()) {
+      errors.push("Entry Price is required")
+    }
+    if (!formData.exitPrice.trim()) {
+      errors.push("Exit Price is required")
+    }
+    if (!formData.strategy.trim()) {
+      errors.push("Strategy is required")
+    }
+    if (!formData.setupType.trim()) {
+      errors.push("Setup Type is required")
+    }
+    if (!formData.riskReward.trim()) {
+      errors.push("Risk:Reward Ratio is required")
+    }
+
+    // Validate numeric fields
+    if (formData.entryPrice && isNaN(Number(formData.entryPrice))) {
+      errors.push("Entry Price must be a valid number")
+    }
+    if (formData.exitPrice && isNaN(Number(formData.exitPrice))) {
+      errors.push("Exit Price must be a valid number")
+    }
+    if (formData.riskReward && isNaN(Number(formData.riskReward))) {
+      errors.push("Risk:Reward Ratio must be a valid number")
+    }
+
+    setValidationErrors(errors)
+    return errors.length === 0
   }
 
   const handleSubmit = async () => {
     if (!uploadedImage) return
 
+    // Validate required fields
+    if (!validateTradeDetails()) {
+      return
+    }
+
     setIsAnalyzing(true)
 
     try {
-      console.log("🚀 Starting trade analysis with real AI...")
+      console.log("🚀 Starting trade analysis with OpenAI...")
 
       const tradeAnalysisService = new TradeAnalysisService()
 
@@ -116,22 +164,22 @@ export default function TradeUploadPage() {
         notes: formData.emotionalNotes,
       }
 
-      // Prepare trade details
+      // Prepare trade details - all required now
       const tradeDetails = {
-        symbol: formData.symbol || undefined,
-        entryPrice: formData.entryPrice ? Number.parseFloat(formData.entryPrice) : undefined,
-        exitPrice: formData.exitPrice ? Number.parseFloat(formData.exitPrice) : undefined,
+        symbol: formData.symbol,
+        entryPrice: Number.parseFloat(formData.entryPrice),
+        exitPrice: Number.parseFloat(formData.exitPrice),
         direction: formData.direction as "long" | "short",
         timeframe: formData.timeframe,
-        riskRewardRatio: formData.riskReward ? Number.parseFloat(formData.riskReward) : undefined,
-        strategy: formData.strategy || undefined,
-        setupType: formData.setupType || undefined,
-        result: "unknown" as const, // Will be determined by AI or user later
+        riskRewardRatio: Number.parseFloat(formData.riskReward),
+        strategy: formData.strategy,
+        setupType: formData.setupType,
+        result: "unknown" as const, // Will be determined by AI
       }
 
-      console.log("📊 Sending to AI:", { emotionalState, tradeDetails })
+      console.log("📊 Sending to OpenAI:", { emotionalState, tradeDetails })
 
-      // Perform REAL AI analysis
+      // Force OpenAI analysis - no fallback to simulated
       const aiAnalysis = await tradeAnalysisService.analyzeTradeImage(
         uploadedImage,
         emotionalState,
@@ -139,7 +187,12 @@ export default function TradeUploadPage() {
         includeMarketContext,
       )
 
-      console.log("✅ AI Analysis completed:", aiAnalysis)
+      // Check if we actually got OpenAI analysis
+      if (aiAnalysis.analysisMethod === "simulated") {
+        throw new Error("OpenAI analysis failed - API key may not be configured correctly")
+      }
+
+      console.log("✅ OpenAI Analysis completed:", aiAnalysis)
 
       // Create trade data object
       const tradeData = {
@@ -158,13 +211,15 @@ export default function TradeUploadPage() {
       existingTrades.unshift(tradeData)
       localStorage.setItem("userTrades", JSON.stringify(existingTrades))
 
-      console.log("💾 Trade saved with AI analysis:", tradeData.id)
+      console.log("💾 Trade saved with OpenAI analysis:", tradeData.id)
 
       // Redirect to the trade detail page
       router.push(`/trade-journal/${tradeData.id}`)
     } catch (error) {
       console.error("❌ Error analyzing trade:", error)
-      alert("Error analyzing trade with AI. Please try again.")
+      alert(
+        `Error analyzing trade with OpenAI: ${error instanceof Error ? error.message : "Unknown error"}. Please check your API key configuration.`,
+      )
     } finally {
       setIsAnalyzing(false)
     }
@@ -178,7 +233,7 @@ export default function TradeUploadPage() {
         <div className="max-w-3xl mx-auto">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload Trade for AI Analysis</h1>
           <p className="text-gray-500 mb-8">
-            Upload your TradingView screenshot for comprehensive AI analysis combining technical and psychological
+            Upload your TradingView screenshot for comprehensive OpenAI analysis combining technical and psychological
             insights
           </p>
 
@@ -376,21 +431,36 @@ export default function TradeUploadPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Trade Details</CardTitle>
-                <CardDescription>Provide details about your trade for more accurate AI analysis</CardDescription>
+                <CardDescription>All fields are required for accurate OpenAI analysis</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
+                {validationErrors.length > 0 && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      <div className="space-y-1">
+                        {validationErrors.map((error, index) => (
+                          <div key={index}>• {error}</div>
+                        ))}
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="symbol">Symbol</Label>
+                    <Label htmlFor="symbol">Symbol *</Label>
                     <Input
                       id="symbol"
                       value={formData.symbol}
                       onChange={(e) => updateFormData("symbol", e.target.value)}
                       placeholder="e.g. EURUSD, AAPL"
+                      className={validationErrors.some((e) => e.includes("Symbol")) ? "border-red-500" : ""}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="timeframe">Timeframe</Label>
+                    <Label htmlFor="timeframe">Timeframe *</Label>
                     <Select value={formData.timeframe} onValueChange={(value) => updateFormData("timeframe", value)}>
                       <SelectTrigger id="timeframe">
                         <SelectValue placeholder="Select timeframe" />
@@ -410,7 +480,7 @@ export default function TradeUploadPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Direction</Label>
+                  <Label>Direction *</Label>
                   <RadioGroup
                     value={formData.direction}
                     onValueChange={(value) => updateFormData("direction", value)}
@@ -429,50 +499,58 @@ export default function TradeUploadPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="entry">Entry Price</Label>
+                    <Label htmlFor="entry">Entry Price *</Label>
                     <Input
                       id="entry"
                       type="number"
                       step="0.00001"
                       value={formData.entryPrice}
                       onChange={(e) => updateFormData("entryPrice", e.target.value)}
+                      className={validationErrors.some((e) => e.includes("Entry Price")) ? "border-red-500" : ""}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="exit">Exit Price</Label>
+                    <Label htmlFor="exit">Exit Price *</Label>
                     <Input
                       id="exit"
                       type="number"
                       step="0.00001"
                       value={formData.exitPrice}
                       onChange={(e) => updateFormData("exitPrice", e.target.value)}
+                      className={validationErrors.some((e) => e.includes("Exit Price")) ? "border-red-500" : ""}
+                      required
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="strategy">Strategy</Label>
+                    <Label htmlFor="strategy">Strategy *</Label>
                     <Input
                       id="strategy"
                       value={formData.strategy}
                       onChange={(e) => updateFormData("strategy", e.target.value)}
                       placeholder="e.g. Support Bounce, Breakout"
+                      className={validationErrors.some((e) => e.includes("Strategy")) ? "border-red-500" : ""}
+                      required
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="setup">Setup Type</Label>
+                    <Label htmlFor="setup">Setup Type *</Label>
                     <Input
                       id="setup"
                       value={formData.setupType}
                       onChange={(e) => updateFormData("setupType", e.target.value)}
                       placeholder="e.g. Reversal, Continuation"
+                      className={validationErrors.some((e) => e.includes("Setup Type")) ? "border-red-500" : ""}
+                      required
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="risk-reward">Risk:Reward Ratio</Label>
+                  <Label htmlFor="risk-reward">Risk:Reward Ratio *</Label>
                   <Input
                     id="risk-reward"
                     type="number"
@@ -480,6 +558,8 @@ export default function TradeUploadPage() {
                     value={formData.riskReward}
                     onChange={(e) => updateFormData("riskReward", e.target.value)}
                     placeholder="e.g. 1.5"
+                    className={validationErrors.some((e) => e.includes("Risk:Reward")) ? "border-red-500" : ""}
+                    required
                   />
                 </div>
 
@@ -525,10 +605,10 @@ export default function TradeUploadPage() {
                   {isAnalyzing ? (
                     <>
                       <Brain className="mr-2 h-4 w-4 animate-pulse" />
-                      AI Analyzing Trade...
+                      OpenAI Analyzing Trade...
                     </>
                   ) : (
-                    "Submit for AI Analysis"
+                    "Submit for OpenAI Analysis"
                   )}
                 </Button>
               </CardFooter>
