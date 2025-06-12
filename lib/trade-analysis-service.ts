@@ -44,6 +44,7 @@ export interface AIAnalysis {
   riskManagementAssessment: string
   marketContextInsights?: string[]
   analysisMethod: "openai" | "simulated" // Track which method was used
+  debugInfo?: string // Add debug information
 }
 
 export interface TradePattern {
@@ -64,11 +65,29 @@ export interface TradePattern {
 export class TradeAnalysisService {
   private marketDataService: MarketDataService
   private hasOpenAIKey: boolean
+  private apiKey: string | null
 
   constructor() {
     this.marketDataService = new MarketDataService()
-    // Check if OpenAI API key is available
-    this.hasOpenAIKey = !!(process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY)
+
+    // Check for API key in both server and client environments
+    this.apiKey = null
+
+    // Try to get the API key from different sources
+    if (typeof window === "undefined") {
+      // Server-side
+      this.apiKey = process.env.OPENAI_API_KEY || null
+    } else {
+      // Client-side - check if it's available as a public env var
+      this.apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || null
+    }
+
+    this.hasOpenAIKey = !!this.apiKey
+
+    console.log("🔑 TradeAnalysisService initialized:")
+    console.log("- Environment:", typeof window === "undefined" ? "server" : "client")
+    console.log("- API Key available:", this.hasOpenAIKey)
+    console.log("- API Key length:", this.apiKey ? this.apiKey.length : 0)
   }
 
   async analyzeTradeImage(
@@ -81,6 +100,7 @@ export class TradeAnalysisService {
     console.log("📊 Trade details:", tradeDetails)
     console.log("🧠 Emotional state:", emotionalState)
     console.log("🔑 OpenAI API available:", this.hasOpenAIKey)
+    console.log("🖼️ Image URL:", imageUrl.substring(0, 50) + "...")
 
     // Get market context if requested and symbol/timeframe are provided
     let marketContext: MarketContext | undefined
@@ -98,16 +118,24 @@ export class TradeAnalysisService {
     }
 
     // Try OpenAI analysis first, fall back to simulated analysis
-    if (this.hasOpenAIKey) {
+    if (this.hasOpenAIKey && this.apiKey) {
       try {
+        console.log("🚀 Attempting OpenAI analysis...")
         return await this.performOpenAIAnalysis(imageUrl, emotionalState, tradeDetails, marketContext)
       } catch (error) {
-        console.error("❌ OpenAI analysis failed, falling back to simulated analysis:", error)
-        return await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
+        console.error("❌ OpenAI analysis failed:", error)
+        console.error("Error details:", error instanceof Error ? error.message : String(error))
+
+        // Return simulated analysis with error info
+        const simulatedAnalysis = await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
+        simulatedAnalysis.debugInfo = `OpenAI analysis failed: ${error instanceof Error ? error.message : String(error)}`
+        return simulatedAnalysis
       }
     } else {
       console.log("⚠️ OpenAI API key not found, using simulated analysis")
-      return await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
+      const simulatedAnalysis = await this.performSimulatedAnalysis(emotionalState, tradeDetails, marketContext)
+      simulatedAnalysis.debugInfo = "OpenAI API key not configured"
+      return simulatedAnalysis
     }
   }
 
@@ -117,34 +145,45 @@ export class TradeAnalysisService {
     tradeDetails: Partial<TradeDetails>,
     marketContext?: MarketContext,
   ): Promise<AIAnalysis> {
-    console.log("🔍 Attempting OpenAI Vision API analysis...")
+    console.log("🔍 Performing OpenAI Vision API analysis...")
+    console.log("🔑 Using API key:", this.apiKey?.substring(0, 10) + "...")
 
-    // Dynamic import to avoid issues when API key is not available
-    const { generateText } = await import("ai")
-    const { openai } = await import("@ai-sdk/openai")
+    try {
+      // Dynamic import to avoid issues when API key is not available
+      const { generateText } = await import("ai")
+      const { openai } = await import("@ai-sdk/openai")
 
-    const { text } = await generateText({
-      model: openai("gpt-4o"),
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert trading psychologist and technical analyst with 20+ years of experience. 
-          
-          Your task is to analyze trading chart screenshots and provide comprehensive insights that combine:
-          1. Technical analysis of the chart patterns, indicators, and price action
-          2. Psychological analysis based on the trader's emotional state
-          3. Risk management assessment
-          4. Actionable improvement suggestions
-          
-          Always provide specific, actionable insights that will help improve trading performance.
-          Focus on both the technical setup and the psychological factors that influenced the trade.`,
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Please analyze this trading chart screenshot and provide a comprehensive analysis.
+      console.log("📦 AI SDK modules loaded successfully")
+
+      // Create OpenAI client with explicit API key
+      const openaiClient = openai({
+        apiKey: this.apiKey!,
+      })
+
+      console.log("🤖 OpenAI client created, making API call...")
+
+      const { text } = await generateText({
+        model: openaiClient("gpt-4o"),
+        messages: [
+          {
+            role: "system",
+            content: `You are an expert trading psychologist and technical analyst with 20+ years of experience. 
+            
+            Your task is to analyze trading chart screenshots and provide comprehensive insights that combine:
+            1. Technical analysis of the chart patterns, indicators, and price action
+            2. Psychological analysis based on the trader's emotional state
+            3. Risk management assessment
+            4. Actionable improvement suggestions
+            
+            Always provide specific, actionable insights that will help improve trading performance.
+            Focus on both the technical setup and the psychological factors that influenced the trade.`,
+          },
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Please analyze this trading chart screenshot and provide a comprehensive analysis.
 
 TRADE CONTEXT:
 - Symbol: ${tradeDetails.symbol || "Not specified"}
@@ -201,25 +240,39 @@ PATTERN RECOGNITION:
 - What recurring themes should the trader watch for?
 
 Provide detailed, specific insights that will genuinely help this trader improve their performance.`,
-            },
-            {
-              type: "image",
-              image: imageUrl,
-            },
-          ],
-        },
-      ],
-    })
+              },
+              {
+                type: "image",
+                image: imageUrl,
+              },
+            ],
+          },
+        ],
+      })
 
-    console.log("✅ OpenAI analysis completed successfully")
-    console.log("📝 Raw AI response:", text.substring(0, 200) + "...")
+      console.log("✅ OpenAI analysis completed successfully")
+      console.log("📝 Raw AI response length:", text.length)
+      console.log("📝 Response preview:", text.substring(0, 200) + "...")
 
-    // Parse the AI response into structured format
-    const analysis = this.parseAIResponse(text, marketContext)
-    analysis.analysisMethod = "openai"
+      // Parse the AI response into structured format
+      const analysis = this.parseAIResponse(text, marketContext)
+      analysis.analysisMethod = "openai"
+      analysis.debugInfo = "OpenAI analysis completed successfully"
 
-    console.log("🎯 Structured OpenAI analysis:", analysis)
-    return analysis
+      console.log("🎯 Structured OpenAI analysis completed")
+      return analysis
+    } catch (error) {
+      console.error("💥 OpenAI API Error:", error)
+
+      // Log more detailed error information
+      if (error instanceof Error) {
+        console.error("Error name:", error.name)
+        console.error("Error message:", error.message)
+        console.error("Error stack:", error.stack)
+      }
+
+      throw error
+    }
   }
 
   private async performSimulatedAnalysis(
@@ -242,7 +295,7 @@ Provide detailed, specific insights that will genuinely help this trader improve
     const marketContextInsights = marketContext
       ? [
           `Trade occurred during ${marketContext.volatility.isHigh ? "high" : "normal"} market volatility (${marketContext.volatility.value}%)`,
-          `Market trend: ${marketContext.trend.direction} with ${marketContext.trend.strength}% strength`,
+          `Market trend: ${marketContext.trend.direction} (Strength: ${marketContext.trend.strength}%)`,
           `Key levels: ${marketContext.keyLevels.map((l) => `${l.type} at ${l.price}`).join(", ")}`,
           ...marketContext.indicators.map((i) => `${i.name}: ${i.value} (${i.interpretation})`),
         ]
@@ -258,9 +311,10 @@ Provide detailed, specific insights that will genuinely help this trader improve
       riskManagementAssessment: this.generateRiskAssessment(emotionalState, tradeDetails),
       marketContextInsights,
       analysisMethod: "simulated",
+      debugInfo: "Using simulated analysis - OpenAI not available",
     }
 
-    console.log("✅ Simulated analysis completed:", analysis)
+    console.log("✅ Simulated analysis completed")
     return analysis
   }
 
