@@ -11,25 +11,29 @@ export default function HomePage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-purple-50 pt-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/20 to-purple-100/20" />
+      <section
+        className="relative overflow-hidden bg-cover bg-center bg-no-repeat pt-20"
+        style={{ backgroundImage: "url(/hero-ai-background.png)" }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 to-purple-900/70" />
         <div className="container mx-auto px-6 py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border-blue-200">
+            <Badge className="mb-6 bg-white/90 backdrop-blur-sm text-blue-700 border-blue-200">
               ⚡ Transform Your Trading Psychology for Better Results
             </Badge>
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg">
               Welcome to Your Trading Evolution
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md">
               Your fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological support
-              system is seamlessly integrated—designed to help you stay centered, focused, and consistently successful in your trading career.
+              system is seamlessly integrated—designed to help you stay centered, focused, and consistently successful
+              in your trading career.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 font-semibold px-8 py-4 text-lg shadow-lg"
+                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg"
                 >
                   Begin Your Journey
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -38,7 +42,7 @@ export default function HomePage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-blue-300 text-blue-700 hover:bg-blue-50 px-8 py-4 text-lg"
+                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg backdrop-blur-sm"
               >
                 ▶ Watch Demo
               </Button>
