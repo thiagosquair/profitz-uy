@@ -72,15 +72,15 @@ export default function LandingPage() {
             <div className="inline-flex items-center justify-center mb-6">
               <Badge className="bg-[#FFD700]/20 text-[#FFD700] border-[#FFD700]/30 px-4 py-1 text-sm">
                 <Sparkles className="h-4 w-4 mr-2" />
-                Transform Your Trading Psychologyyyyyy
+                Transform Your Trading Psychology
               </Badge>
             </div>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-[#F5F5F5] via-[#FFD700] to-[#F5F5F5] bg-clip-text text-transparent">
               Welcome to Your Trading Evolution
             </h1>
             <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
-              Step into a fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological
-              support system is seamlessly integrated—designed to help traders stay centered, focused, and consistently
+              Your fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological
+              support system is seamlessly integrated—designed to help you stay centered, focused, and consistently
               successful.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
