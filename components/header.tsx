@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Brain, Menu, X, LogIn, UserPlus } from "lucide-react"
+import { Menu, X, LogIn, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { getCurrentUser, simulateSignOut } from "@/lib/auth-simulation"
 
@@ -49,16 +50,20 @@ export function Header() {
         isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-200" : "bg-white/80 backdrop-blur-sm"
       }`}
     >
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Brain className="h-6 w-6 text-white" />
+          <Link href="/" className="flex items-center group">
+            <div className="w-auto h-12 md:h-14 flex items-center">
+              <Image
+                src="/profitz-logo-horizontal.png"
+                alt="PROFITZ Logo"
+                width={400}
+                height={60}
+                className="w-auto h-full group-hover:scale-105 transition-transform"
+                priority
+              />
             </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              ProFitz
-            </span>
           </Link>
 
           {/* Desktop Navigation */}
