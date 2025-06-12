@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 import { ProfileBuilderProvider } from "@/providers/profile-builder-provider"
+import { QuoteTimer } from "@/components/quote-timer"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -22,10 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ProfileBuilderProvider>
-          {children}
-          <Toaster />
-        </ProfileBuilderProvider>
+        <QuoteTimer>
+          <ProfileBuilderProvider>
+            {children}
+            <Toaster />
+          </ProfileBuilderProvider>
+        </QuoteTimer>
       </body>
     </html>
   )
