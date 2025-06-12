@@ -183,42 +183,16 @@ export function ProfileBuilderModal({ open, onOpenChange }: ProfileBuilderModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] p-0 bg-[#1A1A1A] border-gray-800 overflow-hidden">
+      <DialogContent className="sm:max-w-[700px] p-0 bg-white border-gray-200 overflow-hidden">
         {/* Progress bar */}
-        <div className="w-full h-1 bg-gray-800">
+        <div className="w-full h-1 bg-gray-100">
           <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
-        </div>
-
-        {/* Logo and step indicator */}
-        <div className="flex items-center justify-between px-6 pt-6">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10">
-              <Image 
-                src="/profitz-logo-large.png" 
-                alt="ProFitz Logo" 
-                width={40} 
-                height={40} 
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <span className="text-lg font-bold text-white">ProFitz</span>
-          </div>
-          <div className="flex items-center space-x-1">
-            {[0, 1, 2, 3, 4, 5].map((i) => (
-              <div
-                key={i}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  i === step ? "bg-blue-500 w-6" : i < step ? "bg-blue-500/50" : "bg-gray-700"
-                }`}
-              />
-            ))}
-          </div>
         </div>
 
         {/* Step content */}
         <div className="p-6">
           {step === 0 && <WelcomeStep onContinue={handleNext} />}
-          {step === 1 && <ExperienceStep onSelect={handleExperienceSelect} />}
+          {step === 1 && <ExperienceStep onSelect={handleExperienceSelect} />} 
           {step === 2 && (
             <InstrumentsStep
               selectedInstruments={profileData.instruments}
@@ -242,3 +216,5 @@ export function ProfileBuilderModal({ open, onOpenChange }: ProfileBuilderModalP
     </Dialog>
   )
 }
+
+
