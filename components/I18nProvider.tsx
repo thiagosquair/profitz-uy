@@ -1,6 +1,6 @@
 "use client"
 
-import { I18nextProvider } from "react-I18next"
+import { I18nextProvider } from "react-i18next"
 import I18n from "@/lib/I18n"
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
