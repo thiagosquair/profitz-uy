@@ -14,11 +14,11 @@ import {
   Settings,
   LogOut,
   HelpCircle,
+  CreditCard,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -38,16 +38,13 @@ export function Navigation() {
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center justify-center group">
-          <div className="w-auto h-20 flex items-center">
-            <Image
-              src="/profitz-logo-full.png"
-              alt="PROFITZ - Trading Psychology Lab"
-              width={240}
-              height={80}
-              className="w-auto h-full group-hover:scale-105 transition-transform"
-              priority
-            />
+        <Link href="/dashboard" className="flex items-center space-x-3 group">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Brain className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">ProFitz</h1>
+            <p className="text-xs text-gray-500">Trading Psychology</p>
           </div>
         </Link>
       </div>
@@ -84,6 +81,14 @@ export function Navigation() {
 
       {/* User section */}
       <div className="p-4 space-y-2">
+        <Link
+          href="/subscription"
+          className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
+        >
+          <CreditCard className="h-5 w-5 group-hover:scale-110 transition-transform" />
+          <span>Subscription Plans</span>
+        </Link>
+        
         <Link
           href="/settings"
           className="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-blue-600 transition-all duration-200 group"
