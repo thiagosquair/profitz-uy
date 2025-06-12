@@ -16,14 +16,14 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 border-blue-200">
-              ⚡ Transform Your Trading Psychology
+              ⚡ Transform Your Trading Psychology for Better Results
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
               Welcome to Your Trading Evolution
             </h1>
             <p className="text-xl md:text-2xl text-gray-600 mb-8 leading-relaxed">
               Your fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological support
-              system is seamlessly integrated—designed to help you stay centered, focused, and consistently successful.
+              system is seamlessly integrated—designed to help you stay centered, focused, and consistently successful in your trading career.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
