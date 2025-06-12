@@ -183,7 +183,7 @@ export function ProfileBuilderModal({ open, onOpenChange }: ProfileBuilderModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[700px] p-0 bg-white border-gray-200 overflow-hidden">
+      <DialogContent className="sm:max-w-[700px] p-0 bg-white border-gray-200 overflow-y-auto max-h-[90vh]">
         {/* Progress bar */}
         <div className="w-full h-1 bg-gray-100">
           <div className="h-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all duration-500 ease-out" style={{ width: `${progress}%` }} />
