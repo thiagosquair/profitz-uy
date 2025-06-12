@@ -127,13 +127,30 @@ export class TradeAnalysisService {
           messages: [
             {
               role: "system",
-              content: `You are an expert trading psychologist and technical analyst with 20+ years of experience. 
+              content: `You are an expert trading psychologist and technical analyst with 20+ years of experience in financial markets. 
               
-              Your task is to analyze trading chart screenshots and provide comprehensive insights that combine:
+              Your task is to analyze trading chart screenshots and provide comprehensive, DETAILED insights that combine:
               1. Technical analysis of the chart patterns, indicators, and price action
               2. Psychological analysis based on the trader's emotional state
               3. Risk management assessment
               4. Actionable improvement suggestions
+              
+              IMPORTANT: You must provide REAL, DETAILED analysis based solely on what you can see in the chart image. 
+              DO NOT use placeholder or generic responses. If you can identify specific patterns, price levels, indicators, 
+              or market conditions in the image, mention them explicitly with exact values when possible.
+              
+              For technical analysis, identify:
+              - Specific chart patterns (e.g., head and shoulders, double tops/bottoms, flags, etc.)
+              - Key support/resistance levels with price values
+              - Trend direction and strength
+              - Indicator readings (RSI, MACD, moving averages) if visible
+              - Volume patterns if shown
+              - Entry and exit quality based on technical factors
+              
+              For pattern recognition:
+              - Identify specific behavioral patterns based on the trade and emotional state
+              - Connect these patterns to common trading psychology concepts
+              - Provide market context details that are visible in the chart
               
               Always provide specific, actionable insights that will help improve trading performance.
               Focus on both the technical setup and the psychological factors that influenced the trade.`,
@@ -177,29 +194,41 @@ ${
 
 Please provide your analysis in the following structured format:
 
+SUMMARY:
+- Provide a concise summary of the chart and trade, focusing on the most important technical and psychological aspects.
+
 TECHNICAL ANALYSIS:
-- What do you see in the chart? (price action, patterns, indicators, support/resistance levels)
-- How was the entry and exit timing?
-- What technical factors supported or contradicted this trade?
-- Rate the technical setup quality (1-10)
+- Describe the specific chart patterns visible in the image (e.g., double top, head and shoulders, flag)
+- Identify key support/resistance levels with exact price values visible in the chart
+- Analyze the trend direction, strength, and any potential reversal signals
+- Note any indicator readings visible in the chart (RSI, MACD, moving averages)
+- Evaluate entry and exit timing based on technical factors
+- Rate the technical setup quality (1-10) with specific reasoning
 
 PSYCHOLOGICAL ANALYSIS:
-- How did the emotional state (${emotionalState.primaryEmotion}, ${emotionalState.intensity}/10 intensity) likely impact decision-making?
-- What psychological patterns do you observe?
-- How did stress (${emotionalState.stressLevel}/10) and confidence (${emotionalState.confidence}/10) affect execution?
+- Analyze how the emotional state (${emotionalState.primaryEmotion}, ${emotionalState.intensity}/10 intensity) likely impacted decision-making
+- Identify specific psychological patterns visible in this trade execution
+- Evaluate how stress (${emotionalState.stressLevel}/10) and confidence (${emotionalState.confidence}/10) affected entry/exit timing
+- Connect emotional state to technical execution quality
 
 IMPROVEMENT SUGGESTIONS:
-- Specific actionable recommendations for better entries/exits
-- Emotional regulation techniques for this trader's profile
-- Risk management improvements
-- Process optimization suggestions
+- Provide specific, actionable recommendations for better entries/exits based on what's visible in the chart
+- Suggest emotional regulation techniques tailored to this trader's profile
+- Recommend risk management improvements based on the trade context
+- Offer process optimization suggestions that address both technical and psychological aspects
 
 PATTERN RECOGNITION:
-- What behavioral patterns do you identify?
-- How does this trade fit into common trading psychology patterns?
-- What recurring themes should the trader watch for?
+- Identify specific behavioral patterns based on this trade execution
+- Connect this trade to common trading psychology patterns
+- Analyze market context factors visible in the chart (volatility, trend strength, etc.)
+- Highlight recurring themes the trader should watch for
 
-Provide detailed, specific insights that will genuinely help this trader improve their performance.`,
+RISK MANAGEMENT ASSESSMENT:
+- Evaluate position sizing, stop placement, and profit target based on what's visible in the chart
+- Assess risk:reward ratio quality and alignment with the setup
+- Identify any risk management issues that may have affected the trade outcome
+
+Provide detailed, specific insights based ONLY on what you can see in the chart image and the provided trade context. DO NOT use generic placeholder responses.`,
                 },
                 {
                   type: "image_url",
@@ -210,7 +239,7 @@ Provide detailed, specific insights that will genuinely help this trader improve
               ],
             },
           ],
-          max_tokens: 2000,
+          max_tokens: 2500,
         }),
       })
 
@@ -245,10 +274,12 @@ Provide detailed, specific insights that will genuinely help this trader improve
   private parseAIResponse(aiText: string, marketContext?: MarketContext): AIAnalysis {
     // Extract different sections from the AI response
     const sections = {
+      summary: this.extractSection(aiText, "SUMMARY:", "TECHNICAL ANALYSIS:"),
       technical: this.extractSection(aiText, "TECHNICAL ANALYSIS:", "PSYCHOLOGICAL ANALYSIS:"),
       psychological: this.extractSection(aiText, "PSYCHOLOGICAL ANALYSIS:", "IMPROVEMENT SUGGESTIONS:"),
       improvements: this.extractSection(aiText, "IMPROVEMENT SUGGESTIONS:", "PATTERN RECOGNITION:"),
-      patterns: this.extractSection(aiText, "PATTERN RECOGNITION:", ""),
+      patterns: this.extractSection(aiText, "PATTERN RECOGNITION:", "RISK MANAGEMENT ASSESSMENT:"),
+      riskManagement: this.extractSection(aiText, "RISK MANAGEMENT ASSESSMENT:", ""),
     }
 
     // Convert sections into structured arrays
@@ -257,51 +288,40 @@ Provide detailed, specific insights that will genuinely help this trader improve
     const improvementSuggestions = this.extractBulletPoints(sections.improvements)
     const patternRecognition = this.extractBulletPoints(sections.patterns)
 
-    // Generate market context insights if available
-    const marketContextInsights = marketContext
-      ? [
-          `Trade occurred during ${marketContext.volatility.isHigh ? "high" : "normal"} market volatility (${marketContext.volatility.value}%)`,
-          `Market trend: ${marketContext.trend.direction} with ${marketContext.trend.strength}% strength`,
-          `Key levels: ${marketContext.keyLevels.map((l) => `${l.type} at ${l.price}`).join(", ")}`,
-          ...marketContext.indicators.map((i) => `${i.name}: ${i.value} (${i.interpretation})`),
-        ]
-      : undefined
+    // Generate market context insights from the AI response
+    const marketContextInsights = this.extractMarketContextFromAI(aiText, marketContext)
 
     // Extract summary (first paragraph or create one)
-    const summary =
-      aiText
-        .split("\n")
-        .find((line) => line.trim().length > 50)
-        ?.trim() || "AI analysis completed based on chart patterns and emotional state data."
+    let summary = sections.summary.trim()
+    if (!summary || summary.length < 20) {
+      // Fallback to first paragraph of technical analysis
+      summary = technicalObservations.length > 0 
+        ? technicalObservations[0]
+        : "Chart analysis completed based on visible patterns and price action."
+    }
+
+    // Extract risk assessment
+    const riskManagementAssessment = sections.riskManagement.trim() || this.extractRiskAssessment(aiText)
+
+    // Calculate confidence score based on the detail level of the analysis
+    const confidenceScore = this.calculateConfidenceScore(aiText)
 
     return {
       summary,
-      technicalObservations:
-        technicalObservations.length > 0
-          ? technicalObservations
-          : ["Chart analysis completed", "Price action patterns identified", "Entry and exit points evaluated"],
-      psychologicalInsights:
-        psychologicalInsights.length > 0
-          ? psychologicalInsights
-          : [
-              "Emotional state impact assessed",
-              "Decision-making patterns analyzed",
-              "Stress and confidence factors evaluated",
-            ],
-      improvementSuggestions:
-        improvementSuggestions.length > 0
-          ? improvementSuggestions
-          : [
-              "Continue documenting emotional states",
-              "Review entry and exit criteria",
-              "Practice risk management techniques",
-            ],
-      patternRecognition:
-        patternRecognition.length > 0
-          ? patternRecognition
-          : ["Trading behavior patterns identified", "Emotional trading correlations noted"],
-      confidenceScore: 0.85,
-      riskManagementAssessment: this.extractRiskAssessment(aiText),
+      technicalObservations: technicalObservations.length > 0
+        ? technicalObservations
+        : this.extractTechnicalFromFullText(aiText),
+      psychologicalInsights: psychologicalInsights.length > 0
+        ? psychologicalInsights
+        : this.extractPsychologicalFromFullText(aiText),
+      improvementSuggestions: improvementSuggestions.length > 0
+        ? improvementSuggestions
+        : this.extractImprovementsFromFullText(aiText),
+      patternRecognition: patternRecognition.length > 0
+        ? patternRecognition
+        : this.extractPatternsFromFullText(aiText),
+      confidenceScore,
+      riskManagementAssessment,
       marketContextInsights,
       analysisMethod: "openai",
     }
@@ -324,22 +344,149 @@ Provide detailed, specific insights that will genuinely help this trader improve
     const points = text
       .split(/[-•*]\s+|^\d+\.\s+/gm)
       .map((point) => point.trim())
-      .filter((point) => point.length > 10 && !point.includes(":"))
-      .slice(0, 6) // Limit to 6 points max
+      .filter((point) => point.length > 10)
+      .slice(0, 8) // Limit to 8 points max
 
-    return points.length > 0 ? points : [text.substring(0, 200)]
+    return points.length > 0 ? points : []
   }
 
   private extractRiskAssessment(text: string): string {
     // Look for risk-related content in the AI response
-    const riskKeywords = ["risk", "position", "stop", "management", "size"]
+    const riskKeywords = ["risk", "position", "stop", "management", "size", "target"]
     const sentences = text.split(/[.!?]+/)
 
-    const riskSentence = sentences.find((sentence) =>
+    const riskSentences = sentences.filter((sentence) =>
       riskKeywords.some((keyword) => sentence.toLowerCase().includes(keyword)),
-    )
+    ).slice(0, 2)
 
-    return riskSentence?.trim() || "Risk management assessment based on trade parameters and emotional state."
+    return riskSentences.length > 0 
+      ? riskSentences.join(". ").trim() 
+      : "Risk management assessment based on trade parameters and emotional state."
+  }
+
+  private extractTechnicalFromFullText(text: string): string[] {
+    const technicalKeywords = ["pattern", "support", "resistance", "trend", "indicator", "price", "level", "moving average", "rsi", "macd"]
+    const sentences = text.split(/[.!?]+/)
+    
+    const technicalSentences = sentences
+      .filter(sentence => 
+        technicalKeywords.some(keyword => sentence.toLowerCase().includes(keyword))
+      )
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 15)
+      .slice(0, 5)
+    
+    return technicalSentences.length > 0 
+      ? technicalSentences 
+      : ["Chart analysis completed", "Price action patterns identified", "Entry and exit points evaluated"]
+  }
+
+  private extractPsychologicalFromFullText(text: string): string[] {
+    const psychKeywords = ["emotion", "psychology", "feel", "stress", "anxiety", "confidence", "fear", "greed"]
+    const sentences = text.split(/[.!?]+/)
+    
+    const psychSentences = sentences
+      .filter(sentence => 
+        psychKeywords.some(keyword => sentence.toLowerCase().includes(keyword))
+      )
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 15)
+      .slice(0, 5)
+    
+    return psychSentences.length > 0 
+      ? psychSentences 
+      : ["Emotional state impact assessed", "Decision-making patterns analyzed", "Stress and confidence factors evaluated"]
+  }
+
+  private extractImprovementsFromFullText(text: string): string[] {
+    const improvementKeywords = ["improve", "suggest", "recommend", "better", "should", "could", "consider"]
+    const sentences = text.split(/[.!?]+/)
+    
+    const improvementSentences = sentences
+      .filter(sentence => 
+        improvementKeywords.some(keyword => sentence.toLowerCase().includes(keyword))
+      )
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 15)
+      .slice(0, 5)
+    
+    return improvementSentences.length > 0 
+      ? improvementSentences 
+      : ["Continue documenting emotional states", "Review entry and exit criteria", "Practice risk management techniques"]
+  }
+
+  private extractPatternsFromFullText(text: string): string[] {
+    const patternKeywords = ["pattern", "behavior", "habit", "recurring", "tendency", "common", "frequently"]
+    const sentences = text.split(/[.!?]+/)
+    
+    const patternSentences = sentences
+      .filter(sentence => 
+        patternKeywords.some(keyword => sentence.toLowerCase().includes(keyword))
+      )
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 15)
+      .slice(0, 5)
+    
+    return patternSentences.length > 0 
+      ? patternSentences 
+      : ["Trading behavior patterns identified", "Emotional trading correlations noted"]
+  }
+
+  private extractMarketContextFromAI(aiText: string, marketContext?: MarketContext): string[] {
+    // First try to extract market context from the AI response
+    const marketKeywords = ["market", "volatility", "trend", "volume", "session", "liquidity"]
+    const sentences = aiText.split(/[.!?]+/)
+    
+    const marketSentences = sentences
+      .filter(sentence => 
+        marketKeywords.some(keyword => sentence.toLowerCase().includes(keyword))
+      )
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 15)
+      .slice(0, 4)
+    
+    // If we have market context from the API, combine with AI-extracted context
+    if (marketContext) {
+      const apiContextInsights = [
+        `Trade occurred during ${marketContext.volatility.isHigh ? "high" : "normal"} market volatility (${marketContext.volatility.value}%)`,
+        `Market trend: ${marketContext.trend.direction} with ${marketContext.trend.strength}% strength`,
+        `Key levels: ${marketContext.keyLevels.map((l) => `${l.type} at ${l.price}`).join(", ")}`,
+        ...marketContext.indicators.map((i) => `${i.name}: ${i.value} (${i.interpretation})`),
+      ]
+      
+      // Combine both sources, prioritizing AI-extracted context
+      return [...marketSentences, ...apiContextInsights.slice(0, 4 - Math.min(marketSentences.length, 2))]
+    }
+    
+    return marketSentences.length > 0 
+      ? marketSentences 
+      : ["Market context analyzed based on chart conditions"]
+  }
+
+  private calculateConfidenceScore(aiText: string): number {
+    // Calculate confidence based on response length and specificity
+    const length = aiText.length
+    const specificity = this.countSpecificTerms(aiText)
+    
+    // Base score from 0.7 to 0.95 based on length
+    let score = 0.7 + Math.min(0.25, length / 10000 * 0.25)
+    
+    // Adjust based on specificity (0 to 0.05)
+    score += Math.min(0.05, specificity / 20 * 0.05)
+    
+    return Math.min(0.95, score)
+  }
+
+  private countSpecificTerms(text: string): number {
+    const specificTerms = [
+      "double top", "double bottom", "head and shoulders", "flag", "pennant", "triangle",
+      "fibonacci", "support", "resistance", "trend line", "moving average", "macd", "rsi",
+      "stochastic", "divergence", "volume", "breakout", "retracement"
+    ]
+    
+    return specificTerms.reduce((count, term) => {
+      return count + (text.toLowerCase().includes(term) ? 1 : 0)
+    }, 0)
   }
 
   async identifyPatterns(userId: string, timeframe: "week" | "month" | "quarter" | "year"): Promise<TradePattern[]> {
