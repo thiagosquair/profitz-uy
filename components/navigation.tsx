@@ -43,7 +43,7 @@ export function Navigation() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">ProFitz</h1>
-            <p className="text-xs text-gray-500">Trading Psychology</p>
+            <p className="text-xs text-gray-500">Trading Psychology Lab</p>
           </div>
         </Link>
       </div>
