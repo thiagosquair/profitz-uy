@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Sparkles } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 
 interface WelcomeStepProps {
   onContinue: () => void
@@ -10,11 +10,7 @@ interface WelcomeStepProps {
 export function WelcomeStep({ onContinue }: WelcomeStepProps) {
   return (
     <div className="flex flex-col items-center text-center space-y-6 py-8">
-      <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center">
-        <Sparkles className="h-8 w-8 text-blue-600" />
-      </div>
-
-      <h2 className="text-2xl font-bold text-gray-900">Welcome to ProFitz</h2>
+      <h2 className="text-2xl font-bold text-gray-800">Welcome to ProFitz</h2>
 
       <p className="text-gray-600 max-w-md">
         You've just taken the first step toward mastering your trader mind. Let's transform your path together.
