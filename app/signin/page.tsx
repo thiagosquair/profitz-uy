@@ -10,10 +10,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Brain, Eye, EyeOff, AlertCircle, LogIn } from "lucide-react"
+import { Eye, EyeOff, AlertCircle, LogIn } from "lucide-react"
 import { GoogleAuthButton } from "@/components/auth/google-auth-button"
 import { useToast } from "@/hooks/use-toast"
 import { simulateSignIn } from "@/lib/auth-simulation"
+import Image from "next/image"
 
 export default function SignInPage() {
   const router = useRouter()
@@ -125,13 +126,17 @@ export default function SignInPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center space-x-2 mb-6 group">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Brain className="h-7 w-7 text-white" />
+          <Link href="/" className="inline-flex items-center justify-center mb-6 group">
+            <div className="w-auto h-16 flex items-center">
+              <Image
+                src="/profitz-logo-full.png"
+                alt="PROFITZ - Trading Psychology Lab"
+                width={300}
+                height={80}
+                className="w-auto h-full group-hover:scale-105 transition-transform"
+                priority
+              />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              ProFitz
-            </span>
           </Link>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
             Welcome Back
