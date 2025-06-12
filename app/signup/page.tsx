@@ -8,11 +8,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { Brain, Eye, EyeOff, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { simulateSignUp } from "@/lib/auth-simulation"
 import Link from "next/link"
-import Image from "next/image"
 
 export default function SignUp() {
   const router = useRouter()
@@ -94,15 +93,13 @@ export default function SignUp() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="flex items-center justify-center mb-8">
-          <Link href="/" className="group">
-            <Image
-              src="/profitz-logo-main.png"
-              alt="ProFitz Logo"
-              width={200}
-              height={50}
-              className="h-12 w-auto group-hover:scale-105 transition-transform"
-              priority
-            />
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Brain className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              ProFitz
+            </span>
           </Link>
         </div>
 

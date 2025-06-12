@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
-import { Upload, ArrowRight, X, Plus, Info, Brain, AlertCircle } from "lucide-react"
+import { Upload, ArrowRight, X, Plus, Info, Brain, AlertCircle, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { TradeAnalysisService } from "@/lib/trade-analysis-service"
@@ -23,7 +23,10 @@ export default function TradeUploadPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [uploadedImageFile, setUploadedImageFile] = useState<File | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
   const [includeMarketContext, setIncludeMarketContext] = useState(true)
   const [validationErrors, setValidationErrors] = useState<string[]>([])
 
@@ -69,11 +72,15 @@ export default function TradeUploadPage() {
     const file = e.target.files?.[0]
     if (file) {
       setUploadedImage(URL.createObjectURL(file))
+      setUploadedImageFile(file)
+      setUploadedImageUrl(null) // Reset the public URL when a new image is selected
     }
   }
 
   const handleRemoveImage = () => {
     setUploadedImage(null)
+    setUploadedImageFile(null)
+    setUploadedImageUrl(null)
   }
 
   const handleAddEmotion = () => {
@@ -138,8 +145,35 @@ export default function TradeUploadPage() {
     return errors.length === 0
   }
 
+  // New function to upload image to Vercel Blob
+  const uploadImageToBlob = async (file: File): Promise<string> => {
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      
+      const response = await fetch('/api/upload-image', {
+        method: 'POST',
+        body: formData,
+      })
+      
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to upload image')
+      }
+      
+      const data = await response.json()
+      return data.url
+    } catch (error) {
+      console.error('Error uploading image to Vercel Blob:', error)
+      throw error
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   const handleSubmit = async () => {
-    if (!uploadedImage) return
+    if (!uploadedImageFile) return
 
     // Validate required fields
     if (!validateTradeDetails()) {
@@ -150,6 +184,16 @@ export default function TradeUploadPage() {
 
     try {
       console.log("🚀 Starting trade analysis with OpenAI...")
+      
+      // First, upload the image to Vercel Blob to get a public URL
+      let imageUrl = uploadedImageUrl
+      
+      if (!imageUrl) {
+        console.log("📤 Uploading image to Vercel Blob...")
+        imageUrl = await uploadImageToBlob(uploadedImageFile)
+        setUploadedImageUrl(imageUrl)
+        console.log("✅ Image uploaded successfully:", imageUrl)
+      }
 
       const tradeAnalysisService = new TradeAnalysisService()
 
@@ -177,11 +221,11 @@ export default function TradeUploadPage() {
         result: "unknown" as const, // Will be determined by AI
       }
 
-      console.log("📊 Sending to OpenAI:", { emotionalState, tradeDetails })
+      console.log("📊 Sending to OpenAI:", { emotionalState, tradeDetails, imageUrl })
 
       // Force OpenAI analysis - no fallback to simulated
       const aiAnalysis = await tradeAnalysisService.analyzeTradeImage(
-        uploadedImage,
+        imageUrl, // Use the public URL from Vercel Blob
         emotionalState,
         tradeDetails,
         includeMarketContext,
@@ -198,7 +242,7 @@ export default function TradeUploadPage() {
       const tradeData = {
         id: `trade_${Date.now()}`,
         userId: "demo_user",
-        imageUrl: uploadedImage,
+        imageUrl: imageUrl, // Store the public URL
         timestamp: new Date(),
         emotionalState,
         tradeDetails,
@@ -438,11 +482,11 @@ export default function TradeUploadPage() {
                   <Alert variant="destructive">
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription>
-                      <div className="space-y-1">
+                      <ul className="list-disc pl-5">
                         {validationErrors.map((error, index) => (
-                          <div key={index}>• {error}</div>
+                          <li key={index}>{error}</li>
                         ))}
-                      </div>
+                      </ul>
                     </AlertDescription>
                   </Alert>
                 )}
@@ -454,162 +498,140 @@ export default function TradeUploadPage() {
                       id="symbol"
                       value={formData.symbol}
                       onChange={(e) => updateFormData("symbol", e.target.value)}
-                      placeholder="e.g. EURUSD, AAPL"
-                      className={validationErrors.some((e) => e.includes("Symbol")) ? "border-red-500" : ""}
-                      required
+                      placeholder="e.g., EURUSD, AAPL, BTC/USD"
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="timeframe">Timeframe *</Label>
+                    <Label>Timeframe *</Label>
                     <Select value={formData.timeframe} onValueChange={(value) => updateFormData("timeframe", value)}>
-                      <SelectTrigger id="timeframe">
+                      <SelectTrigger>
                         <SelectValue placeholder="Select timeframe" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1m">1 minute</SelectItem>
-                        <SelectItem value="5m">5 minutes</SelectItem>
-                        <SelectItem value="15m">15 minutes</SelectItem>
-                        <SelectItem value="30m">30 minutes</SelectItem>
-                        <SelectItem value="1H">1 hour</SelectItem>
-                        <SelectItem value="4H">4 hours</SelectItem>
-                        <SelectItem value="Daily">Daily</SelectItem>
-                        <SelectItem value="Weekly">Weekly</SelectItem>
+                        <SelectItem value="1m">1 Minute</SelectItem>
+                        <SelectItem value="5m">5 Minutes</SelectItem>
+                        <SelectItem value="15m">15 Minutes</SelectItem>
+                        <SelectItem value="30m">30 Minutes</SelectItem>
+                        <SelectItem value="1H">1 Hour</SelectItem>
+                        <SelectItem value="4H">4 Hours</SelectItem>
+                        <SelectItem value="1D">Daily</SelectItem>
+                        <SelectItem value="1W">Weekly</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Direction *</Label>
-                  <RadioGroup
-                    value={formData.direction}
-                    onValueChange={(value) => updateFormData("direction", value)}
-                    className="flex space-x-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="long" id="long" />
-                      <Label htmlFor="long">Long</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="short" id="short" />
-                      <Label htmlFor="short">Short</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="entry">Entry Price *</Label>
-                    <Input
-                      id="entry"
-                      type="number"
-                      step="0.00001"
-                      value={formData.entryPrice}
-                      onChange={(e) => updateFormData("entryPrice", e.target.value)}
-                      className={validationErrors.some((e) => e.includes("Entry Price")) ? "border-red-500" : ""}
-                      required
-                    />
+                    <Label>Direction *</Label>
+                    <RadioGroup
+                      value={formData.direction}
+                      onValueChange={(value) => updateFormData("direction", value)}
+                      className="flex space-x-4"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="long" id="long" />
+                        <Label htmlFor="long" className="text-green-600 font-medium">
+                          Long
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="short" id="short" />
+                        <Label htmlFor="short" className="text-red-600 font-medium">
+                          Short
+                        </Label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="exit">Exit Price *</Label>
-                    <Input
-                      id="exit"
-                      type="number"
-                      step="0.00001"
-                      value={formData.exitPrice}
-                      onChange={(e) => updateFormData("exitPrice", e.target.value)}
-                      className={validationErrors.some((e) => e.includes("Exit Price")) ? "border-red-500" : ""}
-                      required
-                    />
-                  </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="strategy">Strategy *</Label>
                     <Input
                       id="strategy"
                       value={formData.strategy}
                       onChange={(e) => updateFormData("strategy", e.target.value)}
-                      placeholder="e.g. Support Bounce, Breakout"
-                      className={validationErrors.some((e) => e.includes("Strategy")) ? "border-red-500" : ""}
-                      required
+                      placeholder="e.g., Trend Following, Breakout"
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="setup">Setup Type *</Label>
+                    <Label htmlFor="setupType">Setup Type *</Label>
                     <Input
-                      id="setup"
+                      id="setupType"
                       value={formData.setupType}
                       onChange={(e) => updateFormData("setupType", e.target.value)}
-                      placeholder="e.g. Reversal, Continuation"
-                      className={validationErrors.some((e) => e.includes("Setup Type")) ? "border-red-500" : ""}
-                      required
+                      placeholder="e.g., Double Bottom, Flag Pattern"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="entryPrice">Entry Price *</Label>
+                    <Input
+                      id="entryPrice"
+                      value={formData.entryPrice}
+                      onChange={(e) => updateFormData("entryPrice", e.target.value)}
+                      placeholder="e.g., 1.0750"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="exitPrice">Exit Price *</Label>
+                    <Input
+                      id="exitPrice"
+                      value={formData.exitPrice}
+                      onChange={(e) => updateFormData("exitPrice", e.target.value)}
+                      placeholder="e.g., 1.0850"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="riskReward">Risk:Reward Ratio *</Label>
+                    <Input
+                      id="riskReward"
+                      value={formData.riskReward}
+                      onChange={(e) => updateFormData("riskReward", e.target.value)}
+                      placeholder="e.g., 1.5"
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="risk-reward">Risk:Reward Ratio *</Label>
-                  <Input
-                    id="risk-reward"
-                    type="number"
-                    step="0.1"
-                    value={formData.riskReward}
-                    onChange={(e) => updateFormData("riskReward", e.target.value)}
-                    placeholder="e.g. 1.5"
-                    className={validationErrors.some((e) => e.includes("Risk:Reward")) ? "border-red-500" : ""}
-                    required
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="includeMarketContext"
+                    checked={includeMarketContext}
+                    onCheckedChange={setIncludeMarketContext}
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Label htmlFor="market-context">Include Market Context</Label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="h-4 w-4 text-gray-400" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">
-                              Fetches market data like volatility, trend strength, key levels, and indicators to provide
-                              context for your trade analysis.
-                            </p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <Switch
-                      id="market-context"
-                      checked={includeMarketContext}
-                      onCheckedChange={setIncludeMarketContext}
-                    />
-                  </div>
-                  {includeMarketContext && (
-                    <div className="p-4 bg-blue-50 rounded-md mt-2">
-                      <p className="text-sm text-blue-800">
-                        Market context will include volatility analysis, trend strength, key price levels, technical
-                        indicators, and relevant market events at the time of your trade.
-                      </p>
-                    </div>
-                  )}
+                  <Label htmlFor="includeMarketContext" className="flex items-center">
+                    Include market context in analysis
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-4 w-4 ml-1 text-gray-400" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs">
+                            When enabled, OpenAI will analyze your trade in the context of broader market conditions at
+                            the time of the trade.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </Label>
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={() => setStep(2)}>
                   Back
                 </Button>
-                <Button onClick={handleSubmit} disabled={isAnalyzing}>
-                  {isAnalyzing ? (
-                    <>
-                      <Brain className="mr-2 h-4 w-4 animate-pulse" />
-                      OpenAI Analyzing Trade...
-                    </>
-                  ) : (
-                    "Submit for OpenAI Analysis"
-                  )}
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isAnalyzing || isUploading}
+                  className="flex items-center space-x-2"
+                >
+                  {(isAnalyzing || isUploading) && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <span>
+                    {isUploading ? "Uploading..." : isAnalyzing ? "Analyzing..." : "Analyze with OpenAI"}
+                  </span>
+                  {!isAnalyzing && !isUploading && <Brain className="ml-2 h-4 w-4" />}
                 </Button>
               </CardFooter>
             </Card>

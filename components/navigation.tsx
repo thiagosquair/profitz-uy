@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
+  Brain,
   BookOpen,
   Target,
   TrendingUp,
@@ -13,12 +14,10 @@ import {
   Settings,
   LogOut,
   HelpCircle,
-  Brain,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -38,15 +37,14 @@ export function Navigation() {
     <div className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center justify-center group">
-          <Image
-            src="/profitz-logo-main.png"
-            alt="ProFitz Logo"
-            width={180}
-            height={45}
-            className="h-10 w-auto group-hover:scale-105 transition-transform"
-            priority
-          />
+        <Link href="/dashboard" className="flex items-center space-x-3 group">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Brain className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">ProFitz</h1>
+            <p className="text-xs text-gray-500">Trading Psychology</p>
+          </div>
         </Link>
       </div>
 
