@@ -8,7 +8,15 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "dependencies": {
+    "dependencies": {
+  "@ai-sdk/openai": "latest",
+  // ... other dependencies
+  "i18next": "latest",
+  "i18next-browser-languagedetector": "latest",
+  "i18next-fs-backend": "^2.6.0", // <--- ADD THIS LINE
+  "i18next-http-backend": "latest",
+  // ... rest of your dependencies
+},
     "@ai-sdk/openai": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
