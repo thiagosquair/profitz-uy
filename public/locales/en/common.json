@@ -1,0 +1,51 @@
+{
+  "common": {
+    "welcome": "Welcome to ProFitz",
+    "appName": "ProFitz",
+    "tagline": "Trading Psychology",
+    "continue": "Continue",
+    "next": "Next",
+    "previous": "Previous",
+    "complete": "Complete",
+    "cancel": "Cancel",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "aiCoach": "AI Coach",
+    "learningPath": "Learning Path",
+    "exercises": "Exercises",
+    "reflections": "Reflections",
+    "tradeJournal": "Trade Journal",
+    "progress": "Progress",
+    "achievements": "Achievements",
+    "subscriptionPlans": "Subscription Plans",
+    "settings": "Settings",
+    "help": "Help",
+    "signOut": "Sign Out"
+  },
+  "profileBuilder": {
+    "welcomeTitle": "Welcome to ProFitz",
+    "welcomeDescription": "You\u0027ve just taken the first step toward mastering your trader mind. Let\u0027s transform your path together.",
+    "assessmentTitle": "Trading Psychology Assessment",
+    "assessmentDescription": "Help us understand your trading mindset to provide personalized insights",
+    "questionProgress": "Question {{current}} of {{total}}",
+    "percentComplete": "{{percent}}% Complete",
+    "viewResults": "View Results",
+    "completeAssessment": "Complete Assessment"
+  },
+  "psychologyCategories": {
+    "riskManagement": "Risk Management",
+    "emotionalControl": "Emotional Control",
+    "decisionMaking": "Decision Making",
+    "stressManagement": "Stress Management",
+    "tradingConfidence": "Trading Confidence",
+    "learningAdaptation": "Learning \u0026 Adaptation"
+  },
+  "quotes": {
+    "dailyWisdom": "Daily Trading Wisdom"
+  }
+}
