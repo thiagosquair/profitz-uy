@@ -1,0 +1,51 @@
+{
+  "common": {
+    "welcome": "Bienvenido a ProFitz",
+    "appName": "ProFitz",
+    "tagline": "Psicología de Trading",
+    "continue": "Continuar",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "complete": "Completar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito"
+  },
+  "navigation": {
+    "dashboard": "Panel",
+    "aiCoach": "Coach IA",
+    "learningPath": "Ruta de Aprendizaje",
+    "exercises": "Ejercicios",
+    "reflections": "Reflexiones",
+    "tradeJournal": "Diario de Trading",
+    "progress": "Progreso",
+    "achievements": "Logros",
+    "subscriptionPlans": "Planes de Suscripción",
+    "settings": "Configuración",
+    "help": "Ayuda",
+    "signOut": "Cerrar Sesión"
+  },
+  "profileBuilder": {
+    "welcomeTitle": "Bienvenido a ProFitz",
+    "welcomeDescription": "Acabas de dar el primer paso hacia el dominio de tu mente de trader. Transformemos tu camino juntos.",
+    "assessmentTitle": "Evaluación de Psicología de Trading",
+    "assessmentDescription": "Ayúdanos a entender tu mentalidad de trading para proporcionar insights personalizados",
+    "questionProgress": "Pregunta {{current}} de {{total}}",
+    "percentComplete": "{{percent}}% Completado",
+    "viewResults": "Ver Resultados",
+    "completeAssessment": "Completar Evaluación"
+  },
+  "psychologyCategories": {
+    "riskManagement": "Gestión de Riesgo",
+    "emotionalControl": "Control Emocional",
+    "decisionMaking": "Toma de Decisiones",
+    "stressManagement": "Gestión del Estrés",
+    "tradingConfidence": "Confianza en Trading",
+    "learningAdaptation": "Aprendizaje y Adaptación"
+  },
+  "quotes": {
+    "dailyWisdom": "Sabiduría Diaria de Trading"
+  }
+}
