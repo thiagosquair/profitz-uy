@@ -8,15 +8,7 @@
     "start": "next start",
     "lint": "next lint"
   },
-    "dependencies": {
-  "@ai-sdk/openai": "latest",
-  // ... other dependencies
-  "i18next": "latest",
-  "i18next-browser-languagedetector": "latest",
-  "i18next-fs-backend": "^2.6.0", // <--- ADD THIS LINE
-  "i18next-http-backend": "latest",
-  // ... rest of your dependencies
-},
+  "dependencies": {
     "@ai-sdk/openai": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@radix-ui/react-accordion": "1.2.2",
@@ -57,6 +49,7 @@
     "embla-carousel-react": "8.5.1",
     "i18next": "latest",
     "i18next-browser-languagedetector": "latest",
+    "i18next-fs-backend": "^2.6.0",
     "i18next-http-backend": "latest",
     "input-otp": "1.4.1",
     "lucide-react": "^0.454.0",
@@ -86,3 +79,4 @@
     "typescript": "^5"
   }
 }
+
