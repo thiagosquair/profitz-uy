@@ -25,31 +25,31 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
       value: "Stocks",
       label: "Stocks",
       icon: TrendingUp,
-      color: "#4ECDC4",
+      color: "#3B82F6", // Blue
     },
     {
       value: "Options",
       label: "Options",
       icon: BarChart2,
-      color: "#3B82F6", // Changed to blue
+      color: "#8B5CF6", // Purple
     },
     {
       value: "Forex",
       label: "Forex",
       icon: DollarSign,
-      color: "#4F46E5", // Changed to indigo
+      color: "#2563EB", // Darker Blue
     },
     {
       value: "Crypto",
       label: "Crypto",
       icon: Bitcoin,
-      color: "#9D65FF",
+      color: "#7C3AED", // Darker Purple
     },
     {
       value: "Futures",
       label: "Futures",
       icon: LineChart,
-      color: "#8B5CF6", // Changed to purple
+      color: "#3B82F6", // Blue
     },
     {
       value: "Other",
@@ -61,35 +61,9 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
 
   return (
     <div className="space-y-6">
-      {/* Logo Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-10 h-10">
-            <Image 
-              src="/profitz-logo-large.png" 
-              alt="ProFitz Logo" 
-              width={40} 
-              height={40} 
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <span className="text-lg font-bold text-white">ProFitz</span>
-        </div>
-        <div className="flex space-x-1">
-          {[1, 2, 3, 4, 5].map((step) => (
-            <div 
-              key={step} 
-              className={`w-2 h-2 rounded-full ${
-                step <= 2 ? "bg-blue-500" : step === 3 ? "bg-yellow-500" : "bg-gray-600"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-
       <div className="text-center mb-2">
-        <h2 className="text-2xl font-bold text-white">What are you currently trading?</h2>
-        <p className="text-gray-400 mt-2">Select all that apply</p>
+        <h2 className="text-2xl font-bold text-gray-800">What are you currently trading?</h2>
+        <p className="text-gray-600 mt-2">Select all that apply</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -102,12 +76,12 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
               key={option.value}
               onClick={() => onToggle(option.value)}
               className={`
-                relative flex flex-col items-center text-center p-4 rounded-xl border
+                relative flex flex-col items-center text-center p-4 rounded-xl border border-gray-200 bg-white
                 transition-all duration-300
                 ${
                   isSelected
                     ? `border-[${option.color}] bg-[${option.color}]/10`
-                    : "border-gray-800 hover:border-gray-700 hover:bg-gray-800/50"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                 }
               `}
             >
@@ -115,18 +89,18 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
                 className={`
                   w-12 h-12 rounded-full flex items-center justify-center mb-3
                   transition-all duration-300
-                  ${isSelected ? `bg-[${option.color}]/20` : "bg-gray-800"}
+                  ${isSelected ? `bg-[${option.color}]/20` : "bg-blue-50"}
                 `}
               >
                 <Icon
                   className={`
                     h-6 w-6 transition-all duration-300
-                    ${isSelected ? `text-[${option.color}]` : "text-gray-400"}
+                    ${isSelected ? `text-[${option.color}]` : "text-blue-600"}
                   `}
                 />
               </div>
 
-              <h3 className="text-sm font-medium text-white">{option.label}</h3>
+              <h3 className="text-sm font-medium text-gray-800">{option.label}</h3>
 
               {isSelected && <div className="absolute top-2 right-2 w-3 h-3 bg-blue-500 rounded-full"></div>}
             </button>
@@ -138,7 +112,7 @@ export function InstrumentsStep({ selectedInstruments, onToggle, onContinue }: I
         <Button
           onClick={onContinue}
           disabled={selectedInstruments.length === 0}
-          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 font-semibold py-6 px-8 transition-all duration-300 hover:scale-105 disabled:bg-gray-700 disabled:text-gray-400 disabled:hover:scale-100"
+          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90 font-semibold py-6 px-8 transition-all duration-300 hover:scale-105 disabled:bg-gray-200 disabled:text-gray-400 disabled:hover:scale-100"
         >
           Continue
           <ArrowRight className="ml-2 h-4 w-4" />
