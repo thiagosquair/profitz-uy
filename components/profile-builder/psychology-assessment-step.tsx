@@ -20,13 +20,13 @@ const questions: Question[] = [
   {
     id: "risk1",
     category: "Risk Management",
-    question: "When a trade moves against you, what's your typical reaction?",
+    question: "When a trade moves against you, what\"s your typical reaction?",
     options: [
       "I panic and close immediately",
       "I feel anxious but stick to my plan",
       "I stay calm and reassess",
       "I look for opportunities to add to the position",
-      "I'm completely comfortable with temporary losses",
+      "I\"m completely comfortable with temporary losses",
     ],
   },
   {
@@ -57,13 +57,13 @@ const questions: Question[] = [
   {
     id: "emotion2",
     category: "Emotional Control",
-    question: "When you're in a winning trade, what's your mindset?",
+    question: "When you\"re in a winning trade, what\"s your mindset?",
     options: [
-      "I'm anxious about losing the profit",
-      "I'm excited but worried",
-      "I'm pleased but focused",
-      "I'm confident and relaxed",
-      "I'm completely detached from the outcome",
+      "I\"m anxious about losing the profit",
+      "I\"m excited but worried",
+      "I\"m pleased but focused",
+      "I\"m confident and relaxed",
+      "I\"m completely detached from the outcome",
     ],
   },
   {
@@ -73,9 +73,9 @@ const questions: Question[] = [
     options: [
       "I struggle to separate them",
       "I sometimes let emotions influence me",
-      "I'm usually objective",
-      "I'm mostly emotionally detached",
-      "I'm completely objective",
+      "I\"m usually objective",
+      "I\"m mostly emotionally detached",
+      "I\"m completely objective",
     ],
   },
   // Decision Making
@@ -96,7 +96,7 @@ const questions: Question[] = [
     category: "Decision Making",
     question: "When market conditions change rapidly, how do you adapt?",
     options: [
-      "I freeze and don't know what to do",
+      "I freeze and don\"t know what to do",
       "I struggle to adapt quickly",
       "I adjust my approach gradually",
       "I adapt my strategy efficiently",
@@ -110,9 +110,9 @@ const questions: Question[] = [
     options: [
       "I constantly second-guess myself",
       "I sometimes doubt my decisions",
-      "I'm moderately confident",
-      "I'm usually confident",
-      "I'm completely confident",
+      "I\"m moderately confident",
+      "I\"m usually confident",
+      "I\"m completely confident",
     ],
   },
   // Stress Management
@@ -125,7 +125,7 @@ const questions: Question[] = [
       "I feel stressed but manage",
       "I stay focused under pressure",
       "I perform better under pressure",
-      "Pressure doesn't affect me",
+      "Pressure doesn\"t affect me",
     ],
   },
   {
@@ -143,9 +143,9 @@ const questions: Question[] = [
   {
     id: "stress3",
     category: "Stress Management",
-    question: "What's your approach to managing trading-related stress?",
+    question: "What\"s your approach to managing trading-related stress?",
     options: [
-      "I don't have a specific approach",
+      "I don\"t have a specific approach",
       "I try basic relaxation techniques",
       "I have some stress management strategies",
       "I have effective stress management routines",
@@ -159,10 +159,10 @@ const questions: Question[] = [
     question: "How do you feel about your trading abilities?",
     options: [
       "I lack confidence in my abilities",
-      "I'm somewhat unsure",
-      "I'm moderately confident",
-      "I'm quite confident",
-      "I'm very confident",
+      "I\"m somewhat unsure",
+      "I\"m moderately confident",
+      "I\"m quite confident",
+      "I\"m very confident",
     ],
   },
   {
@@ -174,7 +174,7 @@ const questions: Question[] = [
       "I feel defensive",
       "I consider it objectively",
       "I welcome constructive feedback",
-      "I'm completely open to all feedback",
+      "I\"m completely open to all feedback",
     ],
   },
   {
@@ -207,7 +207,7 @@ const questions: Question[] = [
     category: "Learning & Adaptation",
     question: "How quickly do you adapt to new market conditions?",
     options: [
-      "I'm very slow to adapt",
+      "I\"m very slow to adapt",
       "I adapt gradually",
       "I adapt at a moderate pace",
       "I adapt relatively quickly",
@@ -220,7 +220,7 @@ const questions: Question[] = [
     question: "How do you approach learning from your trading mistakes?",
     options: [
       "I tend to ignore or forget them",
-      "I acknowledge them but don't analyze much",
+      "I acknowledge them but don\"t analyze much",
       "I review them occasionally",
       "I systematically analyze all mistakes",
       "I have a comprehensive learning system",
