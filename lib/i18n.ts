@@ -3,6 +3,8 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import HttpBackend from 'i18next-http-backend'; // Import for client-side
+import FsBackend from 'i18next-fs-backend'; // Import for server-side
 
 // Import the configuration from next-i18next.config.mjs
 import nextI18nextConfig from '../next-i18next.config.mjs'; // Note the .mjs extension
@@ -10,19 +12,15 @@ import nextI18nextConfig from '../next-i18next.config.mjs'; // Note the .mjs ext
 const isBrowser = typeof window !== 'undefined';
 
 i18n
-  .use(initReactI18next)
+  .use(initReactI18next )
   .use(LanguageDetector) // Only use LanguageDetector in the browser
+  .use(isBrowser ? HttpBackend : FsBackend) // Conditionally use HttpBackend or FsBackend
   .init({
     ...nextI18nextConfig.i18n,
     // Load resources based on environment
     backend: {
       loadPath: isBrowser ? '/locales/{{lng}}/{{ns}}.json' : './public/locales/{{lng}}/{{ns}}.json',
     },
-    // Use different backends conditionally
-    ...(isBrowser
-      ? { use: [require('i18next-http-backend')] } // Client-side: HTTP backend
-      : { use: [require('i18next-fs-backend')] } // Server-side: FS backend
-    ),
     // Fallback language
     fallbackLng: 'en',
     // Default namespace
