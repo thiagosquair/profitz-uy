@@ -1,34 +1,40 @@
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
+// lib/i18n.ts (or wherever you initialize i18next)
 
-// Import both backends
-import HttpBackend from "i18next-http-backend";
-import FsBackend from "i18next-fs-backend";
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Determine if we are in the browser environment
-const isBrowser = typeof window !== "undefined";
+// Import the configuration from next-i18next.config.js
+import nextI18nextConfig from '../next-i18next.config';
+
+const isBrowser = typeof window !== 'undefined';
 
 i18n
-  // Conditionally use the appropriate backend
-  .use(isBrowser ? HttpBackend : FsBackend )
-  .use(LanguageDetector)
   .use(initReactI18next)
+  .use(LanguageDetector) // Only use LanguageDetector in the browser
   .init({
-    fallbackLng: "en",
-    debug: false,
-    interpolation: {
-      escapeValue: false, // not needed for react as it escapes by default
-    },
-    ns: ["common"], // default namespace
-    defaultNS: "common",
+    ...nextI18nextConfig.i18n,
+    // Load resources based on environment
     backend: {
-      // Adjust loadPath based on environment
-      loadPath: isBrowser ? "/locales/{{lng}}/{{ns}}.json" : "./public/locales/{{lng}}/{{ns}}.json",
+      loadPath: isBrowser ? '/locales/{{lng}}/{{ns}}.json' : './public/locales/{{lng}}/{{ns}}.json',
     },
-    detection: {
-      order: ["localStorage", "navigator", "htmlTag"],
-      caches: ["localStorage"],
+    // Use different backends conditionally
+    ...(isBrowser
+      ? { use: [require('i18next-http-backend')] } // Client-side: HTTP backend
+      : { use: [require('i18next-fs-backend')] } // Server-side: FS backend
+    ),
+    // Fallback language
+    fallbackLng: 'en',
+    // Default namespace
+    ns: ['common'],
+    defaultNS: 'common',
+    // Key separator
+    keySeparator: false,
+    interpolation: {
+      escapeValue: false, // react already escapes by default
+    },
+    react: {
+      useSuspense: false,
     },
   });
 
