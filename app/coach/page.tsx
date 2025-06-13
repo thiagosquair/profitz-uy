@@ -2,14 +2,28 @@
 
 import { useState } from "react"
 import { Navigation } from "@/components/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Send, Brain, TrendingUp, Target, AlertTriangle, Lightbulb, Loader2 } from "lucide-react"
+import {
+  Send,
+  Brain,
+  TrendingUp,
+  Target,
+  AlertTriangle,
+  Lightbulb,
+  Loader2,
+} from "lucide-react"
 
 interface Message {
   id: string
@@ -45,28 +59,33 @@ export default function EnhancedCoachPage() {
     {
       type: "pattern",
       title: "Monday Morning Dip",
-      description: "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
+      description:
+        "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
       confidence: 0.87,
       actionable: true,
     },
     {
       type: "opportunity",
       title: "Reflection Quality Improving",
-      description: "Your journal entries show 35% more self-awareness compared to last month",
+      description:
+        "Your journal entries show 35% more self-awareness compared to last month",
       confidence: 0.92,
       actionable: false,
     },
     {
       type: "risk",
       title: "Consistency Risk Detected",
-      description: "Pattern suggests 68% chance of breaking streak in next 3 days without intervention",
+      description:
+        "Pattern suggests 68% chance of breaking streak in next 3 days without intervention",
       confidence: 0.74,
       actionable: true,
     },
   ])
 
   // Track chat history for context
-  const [chatHistory, setChatHistory] = useState<{ role: "user" | "coach"; content: string }[]>([
+  const [chatHistory, setChatHistory] = useState<
+    { role: "user" | "coach"; content: string }[]
+  >([
     {
       role: "coach",
       content:
@@ -83,17 +102,22 @@ export default function EnhancedCoachPage() {
       journalEntries: 12,
       completedExercises: 8,
     },
-    knownPatterns: ["Anxiety during high volatility", "Early exits when in profit", "Weekend trading hesitation"],
+    knownPatterns: [
+      "Anxiety during high volatility",
+      "Early exits when in profit",
+      "Weekend trading hesitation",
+    ],
   }
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
 
-    // Add this check to ensure the fetch call only runs in the browser
-    if (typeof window === 'undefined') {
-      console.warn("Skipping API call to /api/ai-coach during server-side render/build.");
-      setIsLoading(false); // Ensure loading state is reset
-      return;
+    // Only call fetch in the browser environment
+    if (typeof window === "undefined") {
+      console.warn(
+        "Skipping API call to /api/ai-coach during server-side render/build."
+      )
+      return
     }
 
     const userMessage: Message = {
@@ -106,13 +130,9 @@ export default function EnhancedCoachPage() {
     // Add user message to chat
     setMessages((prev) => [...prev, userMessage])
 
-    // Add to chat history for context
-    const updatedChatHistory: { role: "user" | "coach"; content: string }[] = [
-      ...chatHistory.filter((entry): entry is { role: "user" | "coach"; content: string } =>
-        entry.role === "user" || entry.role === "coach"
-      ),
-      { role: "user", content: inputMessage }
-    ]
+    // Update chat history for API context, including the new user message
+    const updatedChatHistory = [...chatHistory, { role: "user", content: inputMessage }]
+
     setChatHistory(updatedChatHistory)
     setInputMessage("")
     setIsLoading(true)
@@ -149,12 +169,13 @@ export default function EnhancedCoachPage() {
       // Add coach response to messages
       setMessages((prev) => [...prev, coachResponse])
 
-      // Add to chat history
-      setChatHistory([...updatedChatHistory, { role: "coach", content: data.response }].slice(-10))
+      // Update chat history with coach response, keep last 10 for context
+      setChatHistory((prev) =>
+        [...prev, { role: "coach", content: data.response }].slice(-10)
+      )
     } catch (error) {
       console.error("Error getting AI coach response:", error)
 
-      // Add error message
       const errorMessage: Message = {
         id: Date.now().toString(),
         content: "I'm having trouble connecting right now. Please try again in a moment.",
@@ -202,8 +223,12 @@ export default function EnhancedCoachPage() {
       <main className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Psychology Coach</h1>
-            <p className="text-gray-600">Advanced behavioral analysis and personalized guidance</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              AI Psychology Coach
+            </h1>
+            <p className="text-gray-600">
+              Advanced behavioral analysis and personalized guidance
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -216,7 +241,8 @@ export default function EnhancedCoachPage() {
                     Behavioral Analysis Coach
                   </CardTitle>
                   <CardDescription>
-                    AI-powered coaching with pattern recognition and predictive insights
+                    AI-powered coaching with pattern recognition and predictive
+                    insights
                   </CardDescription>
                 </CardHeader>
 
@@ -226,15 +252,23 @@ export default function EnhancedCoachPage() {
                       {messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex ${
+                            message.sender === "user"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                         >
                           <div
                             className={`flex items-start space-x-2 max-w-[85%] ${
-                              message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                              message.sender === "user"
+                                ? "flex-row-reverse space-x-reverse"
+                                : ""
                             }`}
                           >
                             <Avatar className="h-8 w-8">
-                              <AvatarFallback>{message.sender === "user" ? "U" : "AI"}</AvatarFallback>
+                              <AvatarFallback>
+                                {message.sender === "user" ? "U" : "AI"}
+                              </AvatarFallback>
                             </Avatar>
                             <div
                               className={`rounded-lg p-4 ${
@@ -252,31 +286,36 @@ export default function EnhancedCoachPage() {
                                         ? "border-red-300 text-red-700"
                                         : message.type === "recommendation"
                                         ? "border-green-300 text-green-700"
-                                        : "border-yellow-300 text-yellow-700"
+                                        : message.type === "insight"
+                                        ? "border-blue-300 text-blue-700"
+                                        : ""
                                     }`}
                                   >
-                                    {message.type.charAt(0).toUpperCase() + message.type.slice(1)}
+                                    {message.type.toUpperCase()}
                                   </Badge>
                                 </div>
                               )}
                               <p className="whitespace-pre-wrap">{message.content}</p>
-                              <time
-                                className="block text-xs text-gray-400 mt-1"
-                                dateTime={message.timestamp.toISOString()}
-                              >
-                                {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                              </time>
+                              <small className="block mt-1 text-xs text-gray-400">
+                                {message.timestamp.toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </small>
                             </div>
                           </div>
                         </div>
                       ))}
                       {isLoading && (
                         <div className="flex justify-start">
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-2 max-w-[85%]">
                             <Avatar className="h-8 w-8">
-                              <Loader2 className="animate-spin" />
+                              <AvatarFallback>AI</AvatarFallback>
                             </Avatar>
-                            <p className="text-gray-500">AI is typing...</p>
+                            <div className="rounded-lg p-4 bg-white border border-gray-200 text-gray-900 flex items-center space-x-2">
+                              <Loader2 className="animate-spin h-5 w-5 text-blue-600" />
+                              <span>Thinking...</span>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -291,57 +330,56 @@ export default function EnhancedCoachPage() {
                     className="flex space-x-2"
                   >
                     <Input
-                      placeholder="Ask your AI Coach anything..."
+                      placeholder="Type your message..."
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       disabled={isLoading}
-                      autoFocus
-                      aria-label="User message input"
+                      aria-label="Chat input"
+                      autoComplete="off"
                     />
-                    <Button type="submit" disabled={isLoading || inputMessage.trim() === ""}>
-                      <Send className="h-4 w-4" />
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !inputMessage.trim()}
+                      aria-label="Send message"
+                    >
+                      <Send className="h-5 w-5" />
                     </Button>
                   </form>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Sidebar with User Insights */}
+            {/* Sidebar with Insights */}
             <div>
               <Card className="h-[600px] flex flex-col">
                 <CardHeader>
-                  <CardTitle>User Insights</CardTitle>
+                  <CardTitle>Insights & Patterns</CardTitle>
                   <CardDescription>
-                    Your trading psychology patterns and actionable advice
+                    Behavioral patterns and risk analysis detected from your data
                   </CardDescription>
                 </CardHeader>
-
                 <CardContent className="flex-1 overflow-y-auto space-y-4">
                   {userInsights.map((insight, idx) => (
                     <div
                       key={idx}
-                      className={`border rounded p-3 ${getInsightColor(insight.type)}`}
-                      role="region"
-                      aria-labelledby={`insight-title-${idx}`}
-                      tabIndex={0}
+                      className={`p-3 rounded border flex items-center space-x-3 ${getInsightColor(
+                        insight.type
+                      )}`}
                     >
-                      <div className="flex items-center space-x-2 mb-1">
-                        {getInsightIcon(insight.type)}
-                        <h3
-                          id={`insight-title-${idx}`}
-                          className="font-semibold text-sm"
-                        >
-                          {insight.title}
-                        </h3>
+                      <div>{getInsightIcon(insight.type)}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{insight.title}</h4>
+                        <p className="text-sm">{insight.description}</p>
+                        <Progress
+                          value={insight.confidence * 100}
+                          className="mt-1 h-2"
+                          aria-label={`Confidence: ${
+                            (insight.confidence * 100).toFixed(0)
+                          }%`}
+                        />
                       </div>
-                      <p className="text-xs mb-1">{insight.description}</p>
-                      <Progress
-                        value={insight.confidence * 100}
-                        className="h-2"
-                        aria-label={`Confidence level: ${Math.round(insight.confidence * 100)}%`}
-                      />
                       {insight.actionable && (
-                        <Badge variant="outline" className="mt-2 text-xs cursor-default">
+                        <Badge className="ml-2" variant="secondary">
                           Actionable
                         </Badge>
                       )}
