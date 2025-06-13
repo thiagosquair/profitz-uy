@@ -63,7 +63,7 @@ export default function EnhancedCoachPage() {
     {
       id: "1",
       content:
-        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+        "Welcome! I\'ve analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you\'re struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
       sender: "coach",
       timestamp: new Date(),
       type: "insight",
@@ -103,7 +103,7 @@ export default function EnhancedCoachPage() {
     {
       role: "coach",
       content:
-        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+        "Welcome! I\'ve analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you\'re struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
     },
   ])
 
@@ -145,6 +145,7 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Update chat history for API context, including the new user message
+    const updatedChatHistory = [...chatHistory, { role: "user" as const, content: inputMessage }]
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
@@ -190,7 +191,7 @@ export default function EnhancedCoachPage() {
       console.error("Error getting AI coach response:", error)
       const errorMessage: Message = {
         id: Date.now().toString(),
-        content: "I'm having trouble connecting right now. Please try again in a moment.",
+        content: "I\'m having trouble connecting right now. Please try again in a moment.",
         sender: "coach",
         timestamp: new Date(),
         type: "insight",
@@ -393,7 +394,8 @@ export default function EnhancedCoachPage() {
                       {insight.actionable && (
                         <Badge className="ml-2" variant="secondary">
                           Actionable
-
+                        </Badge>
+                      )}
                     </div>
                   ))}
                 </CardContent>
@@ -405,3 +407,5 @@ export default function EnhancedCoachPage() {
     </div>
   )
 }
+
+
