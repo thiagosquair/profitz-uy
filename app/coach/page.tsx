@@ -2,14 +2,34 @@
 
 import { useState } from "react"
 import { Navigation } from "@/components/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Send, Brain, TrendingUp, Target, AlertTriangle, Lightbulb, Loader2 } from "lucide-react"
+import {
+  Send,
+  Brain,
+  TrendingUp,
+  Target,
+  AlertTriangle,
+  Lightbulb,
+  Loader2,
+} from "lucide-react"
+
+// Define interfaces at the top level
+interface ChatHistoryEntry {
+  role: "user" | "coach"
+  content: string
+}
 
 interface Message {
   id: string
@@ -28,6 +48,17 @@ interface UserInsight {
   actionable: boolean
 }
 
+interface UserContext {
+  emotionalState: string
+  tradingExperience: string
+  recentActivity: {
+    consistency: number
+    journalEntries: number
+    completedExercises: number
+  }
+  knownPatterns: string[]
+}
+
 export default function EnhancedCoachPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -39,34 +70,37 @@ export default function EnhancedCoachPage() {
       type: "insight",
     },
   ])
-  const [inputMessage, setInputMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [inputMessage, setInputMessage] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [userInsights, setUserInsights] = useState<UserInsight[]>([
     {
       type: "pattern",
       title: "Monday Morning Dip",
-      description: "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
+      description:
+        "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
       confidence: 0.87,
       actionable: true,
     },
     {
       type: "opportunity",
       title: "Reflection Quality Improving",
-      description: "Your journal entries show 35% more self-awareness compared to last month",
+      description:
+        "Your journal entries show 35% more self-awareness compared to last month",
       confidence: 0.92,
       actionable: false,
     },
     {
       type: "risk",
       title: "Consistency Risk Detected",
-      description: "Pattern suggests 68% chance of breaking streak in next 3 days without intervention",
+      description:
+        "Pattern suggests 68% chance of breaking streak in next 3 days without intervention",
       confidence: 0.74,
       actionable: true,
     },
   ])
 
   // Track chat history for context
-  const [chatHistory, setChatHistory] = useState<{ role: "user" | "coach"; content: string }[]>([
+  const [chatHistory, setChatHistory] = useState<ChatHistoryEntry[]>([
     {
       role: "coach",
       content:
@@ -75,7 +109,7 @@ export default function EnhancedCoachPage() {
   ])
 
   // Mock user context - in a real app, this would come from user profile and activity data
-  const userContext = {
+  const userContext: UserContext = {
     emotionalState: "Mixed - some anxiety about market volatility",
     tradingExperience: "Intermediate",
     recentActivity: {
@@ -83,17 +117,22 @@ export default function EnhancedCoachPage() {
       journalEntries: 12,
       completedExercises: 8,
     },
-    knownPatterns: ["Anxiety during high volatility", "Early exits when in profit", "Weekend trading hesitation"],
+    knownPatterns: [
+      "Anxiety during high volatility",
+      "Early exits when in profit",
+      "Weekend trading hesitation",
+    ],
   }
 
-  const sendMessage = async () => {
+  const sendMessage = async (): Promise<void> => {
     if (!inputMessage.trim() || isLoading) return
 
-    // Add this check to ensure the fetch call only runs in the browser
-    if (typeof window === 'undefined') {
-      console.warn("Skipping API call to /api/ai-coach during server-side render/build.");
-      setIsLoading(false); // Ensure loading state is reset
-      return;
+    // Only call fetch in the browser environment
+    if (typeof window === "undefined") {
+      console.warn(
+        "Skipping API call to /api/ai-coach during server-side render/build."
+      )
+      return
     }
 
     const userMessage: Message = {
@@ -106,14 +145,11 @@ export default function EnhancedCoachPage() {
     // Add user message to chat
     setMessages((prev) => [...prev, userMessage])
 
-    // Add to chat history for context
-    const updatedChatHistory: { role: "user" | "coach"; content: string }[] = [
-  ...chatHistory.map((entry) => ({
-    role: entry.role as "user" | "coach",
-    content: entry.content,
-  })),
-  { role: "user", content: inputMessage },
-].slice(-10);
+    // Update chat history for API context, including the new user message
+    const updatedChatHistory: ChatHistoryEntry[] = [
+      ...chatHistory,
+      { role: "user", content: inputMessage }
+    ]
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
@@ -151,12 +187,13 @@ export default function EnhancedCoachPage() {
       // Add coach response to messages
       setMessages((prev) => [...prev, coachResponse])
 
-      // Add to chat history
-      setChatHistory([...updatedChatHistory, { role: "coach", content: data.response }].slice(-10))
+      // Update chat history with coach response, keep last 10 for context
+      setChatHistory((prev) =>
+        [...prev, { role: "coach", content: data.response }].slice(-10)
+      )
     } catch (error) {
       console.error("Error getting AI coach response:", error)
 
-      // Add error message
       const errorMessage: Message = {
         id: Date.now().toString(),
         content: "I'm having trouble connecting right now. Please try again in a moment.",
@@ -184,7 +221,7 @@ export default function EnhancedCoachPage() {
     }
   }
 
-  const getInsightColor = (type: string) => {
+  const getInsightColor = (type: string): string => {
     switch (type) {
       case "pattern":
         return "bg-blue-100 text-blue-800 border-blue-200"
@@ -204,8 +241,12 @@ export default function EnhancedCoachPage() {
       <main className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">AI Psychology Coach</h1>
-            <p className="text-gray-600">Advanced behavioral analysis and personalized guidance</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              AI Psychology Coach
+            </h1>
+            <p className="text-gray-600">
+              Advanced behavioral analysis and personalized guidance
+            </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -218,7 +259,8 @@ export default function EnhancedCoachPage() {
                     Behavioral Analysis Coach
                   </CardTitle>
                   <CardDescription>
-                    AI-powered coaching with pattern recognition and predictive insights
+                    AI-powered coaching with pattern recognition and predictive
+                    insights
                   </CardDescription>
                 </CardHeader>
 
@@ -228,15 +270,23 @@ export default function EnhancedCoachPage() {
                       {messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+                          className={`flex ${
+                            message.sender === "user"
+                              ? "justify-end"
+                              : "justify-start"
+                          }`}
                         >
                           <div
                             className={`flex items-start space-x-2 max-w-[85%] ${
-                              message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                              message.sender === "user"
+                                ? "flex-row-reverse space-x-reverse"
+                                : ""
                             }`}
                           >
                             <Avatar className="h-8 w-8">
-                              <AvatarFallback>{message.sender === "user" ? "U" : "AI"}</AvatarFallback>
+                              <AvatarFallback>
+                                {message.sender === "user" ? "U" : "AI"}
+                              </AvatarFallback>
                             </Avatar>
                             <div
                               className={`rounded-lg p-4 ${
@@ -253,38 +303,36 @@ export default function EnhancedCoachPage() {
                                       message.type === "intervention"
                                         ? "border-red-300 text-red-700"
                                         : message.type === "recommendation"
-                                          ? "border-blue-300 text-blue-700"
-                                          : "border-green-300 text-green-700"
+                                        ? "border-green-300 text-green-700"
+                                        : message.type === "insight"
+                                        ? "border-blue-300 text-blue-700"
+                                        : ""
                                     }`}
                                   >
-                                    {message.type}
+                                    {message.type.toUpperCase()}
                                   </Badge>
                                 </div>
                               )}
-                              <p className="text-sm leading-relaxed">{message.content}</p>
-                              <p
-                                className={`text-xs mt-2 ${
-                                  message.sender === "user" ? "text-blue-100" : "text-gray-500"
-                                }`}
-                              >
-                                {message.timestamp.toLocaleTimeString()}
-                              </p>
+                              <p className="whitespace-pre-wrap">{message.content}</p>
+                              <small className="block mt-1 text-xs text-gray-400">
+                                {message.timestamp.toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </small>
                             </div>
                           </div>
                         </div>
                       ))}
-
                       {isLoading && (
                         <div className="flex justify-start">
-                          <div className="flex items-start space-x-2 max-w-[85%]">
+                          <div className="flex items-center space-x-2 max-w-[85%]">
                             <Avatar className="h-8 w-8">
                               <AvatarFallback>AI</AvatarFallback>
                             </Avatar>
-                            <div className="rounded-lg p-4 bg-white border border-gray-200 text-gray-900">
-                              <div className="flex items-center space-x-2">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                <p className="text-sm">Analyzing your question...</p>
-                              </div>
+                            <div className="rounded-lg p-4 bg-white border border-gray-200 text-gray-900 flex items-center space-x-2">
+                              <Loader2 className="animate-spin h-5 w-5 text-blue-600" />
+                              <span>Thinking...</span>
                             </div>
                           </div>
                         </div>
@@ -292,128 +340,69 @@ export default function EnhancedCoachPage() {
                     </div>
                   </ScrollArea>
 
-                  <div className="flex space-x-2">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      sendMessage()
+                    }}
+                    className="flex space-x-2"
+                  >
                     <Input
-                      placeholder="Describe your current trading psychology challenges..."
+                      placeholder="Type your message..."
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                      className="flex-1"
                       disabled={isLoading}
+                      aria-label="Chat input"
+                      autoComplete="off"
                     />
-                    <Button onClick={sendMessage} disabled={isLoading}>
-                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !inputMessage.trim()}
+                      aria-label="Send message"
+                    >
+                      <Send className="h-5 w-5" />
                     </Button>
-                  </div>
+                  </form>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Insights Panel */}
-            <div className="space-y-6">
-              <Card>
+            {/* Sidebar with Insights */}
+            <div>
+              <Card className="h-[600px] flex flex-col">
                 <CardHeader>
-                  <CardTitle className="text-lg">Behavioral Insights</CardTitle>
-                  <CardDescription>AI-detected patterns and recommendations</CardDescription>
+                  <CardTitle>Insights & Patterns</CardTitle>
+                  <CardDescription>
+                    Behavioral patterns and risk analysis detected from your data
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {userInsights.map((insight, index) => (
-                    <div key={index} className={`p-3 rounded-lg border ${getInsightColor(insight.type)}`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center">
-                          {getInsightIcon(insight.type)}
-                          <span className="ml-2 font-medium text-sm">{insight.title}</span>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {Math.round(insight.confidence * 100)}%
-                        </Badge>
+                <CardContent className="flex-1 overflow-y-auto space-y-4">
+                  {userInsights.map((insight, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-3 rounded border flex items-center space-x-3 ${getInsightColor(
+                        insight.type
+                      )}`}
+                    >
+                      <div>{getInsightIcon(insight.type)}</div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{insight.title}</h4>
+                        <p className="text-sm">{insight.description}</p>
+                        <Progress
+                          value={insight.confidence * 100}
+                          className="mt-1 h-2"
+                          aria-label={`Confidence: ${
+                            (insight.confidence * 100).toFixed(0)
+                          }%`}
+                        />
                       </div>
-                      <p className="text-xs leading-relaxed">{insight.description}</p>
                       {insight.actionable && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="mt-2 text-xs"
-                          onClick={() => {
-                            if (insight.type === "risk") {
-                              window.location.href = "/learning-path?focus=risk-management"
-                            } else if (insight.type === "pattern") {
-                              window.location.href = "/analytics"
-                            }
-                            else {
-                              window.location.href = "/exercises?category=Emotional%20Regulation"
-                            }
-                          }}
-                        >
-                          Take Action
-                        </Button>
-                      )}
+                        <Badge className="ml-2" variant="secondary">
+                          Actionable
+                        </Badge>
+                        )}
                     </div>
                   ))}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Progress Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Emotional Regulation</span>
-                      <span>78%</span>
-                    </div>
-                    <Progress value={78} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Consistency Score</span>
-                      <span>85%</span>
-                    </div>
-                    <Progress value={85} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Risk Psychology</span>
-                      <span>62%</span>
-                    </div>
-                    <Progress value={62} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/exercises/emotional-checkin")}
-                  >
-                    <Target className="mr-2 h-4 w-4" />
-                    Emotional Check-In
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/analytics")}
-                  >
-                    <TrendingUp className="mr-2 h-4 w-4" />
-                    View Patterns
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/learning-path")}
-                  >
-                    <Lightbulb className="mr-2 h-4 w-4" />
-                    Get Recommended Learning Path
-                  </Button>
                 </CardContent>
               </Card>
             </div>
