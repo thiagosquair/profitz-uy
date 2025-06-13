@@ -1,6 +1,6 @@
-// next.config.js
+// next.config.mjs
 
-const { i18n } = require('./next-i18next.config');
+import { i18n } from './next-i18next.config.js'; // Note the .js extension for the imported file
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -9,4 +9,4 @@ const nextConfig = {
   // Add any other Next.js configurations you have here
 };
 
-module.exports = nextConfig;
+export default nextConfig;
