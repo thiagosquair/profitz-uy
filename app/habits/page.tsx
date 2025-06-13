@@ -5,8 +5,30 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar"
 import "react-circular-progressbar/dist/styles.css"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 
-const HabitCard = ({ habit, onToggleCompletion }) => {
-  const [percentage, setPercentage] = useState(0)
+// Define interfaces for type safety
+interface StreakData {
+  date: string
+  streak: number
+}
+
+interface Habit {
+  id: number
+  name: string
+  frequency: number
+  isCompleted: boolean
+  completedDays: number[]
+  currentStreak: number
+  longestStreak: number
+  streakData: StreakData[]
+}
+
+interface HabitCardProps {
+  habit: Habit
+  onToggleCompletion: (habitId: number) => void
+}
+
+const HabitCard = ({ habit, onToggleCompletion }: HabitCardProps) => {
+  const [percentage, setPercentage] = useState<number>(0)
 
   useEffect(() => {
     // Calculate completion percentage based on habit.completedDays.length
@@ -25,7 +47,7 @@ const HabitCard = ({ habit, onToggleCompletion }) => {
         <div style={{ width: 100, height: 100 }}>
           <CircularProgressbar
             value={percentage}
-            text={`${percentage}%`}
+            text={`${Math.round(percentage)}%`}
             styles={buildStyles({
               pathColor: `rgba(62, 152, 255, ${percentage / 100})`,
               textColor: "#3e98ff",
@@ -70,7 +92,7 @@ const HabitCard = ({ habit, onToggleCompletion }) => {
 }
 
 const HabitsPage = () => {
-  const [habits, setHabits] = useState([
+  const [habits, setHabits] = useState<Habit[]>([
     {
       id: 1,
       name: "Drink Water",
@@ -103,7 +125,7 @@ const HabitsPage = () => {
     },
   ])
 
-  const toggleHabitCompletion = (habitId) => {
+  const toggleHabitCompletion = (habitId: number): void => {
     setHabits(habits.map((habit) => (habit.id === habitId ? { ...habit, isCompleted: !habit.isCompleted } : habit)))
   }
 
@@ -120,3 +142,4 @@ const HabitsPage = () => {
 }
 
 export default HabitsPage
+
