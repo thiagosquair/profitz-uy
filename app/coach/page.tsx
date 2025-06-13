@@ -183,21 +183,14 @@ export default function EnhancedCoachPage() {
       // Add coach response to messages
       setMessages((prev) => [...prev, coachResponse])
 
-      // Update chat history with coach response, keep last 10 for context
-      setChatHistory((prev) =>
+  setChatHistory((prev) =>
         [...prev, { role: "coach" as const, content: data.response }].slice(-10)
       );
     } catch (error) {
       console.error("Error getting AI coach response:", error)
-
-        [...prev, { role: "coach" as const, content: data.response }].slice(-10)
-      );
-    } catch (error) {
-      console.error("Error getting AI coach response:", error)
-
       const errorMessage: Message = {
         id: Date.now().toString(),
-        content: "I\'m having trouble connecting right now. Please try again in a moment.",
+        content: "I\\'m having trouble connecting right now. Please try again in a moment.",
         sender: "coach",
         timestamp: new Date(),
         type: "insight",
