@@ -33,7 +33,28 @@ import {
   LiveMetricDisplay,
   AnimatedCounter,
 } from "@/components/interactive-widgets"
+// app/dashboard/page.tsx
+import { ProfileBuilderProvider } from "@/providers/profile-builder-provider"; // Correct import path
+import { useProfileBuilder } from "@/hooks/use-profile-builder"; // Assuming this is the path to your hook
 
+export default function DashboardPage() {
+  return (
+    <ProfileBuilderProvider>
+      {/* The content that uses useProfileBuilder goes here */}
+      <DashboardContent /> 
+    </ProfileBuilderProvider>
+  );
+}
+
+function DashboardContent() {
+  const profile = useProfileBuilder();
+  // ... rest of your dashboard page content
+  return (
+    <div>
+      {/* Your dashboard UI */}
+    </div>
+  );
+}
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null)
   const [showPsychologyPrompt, setShowPsychologyPrompt] = useState(false)
