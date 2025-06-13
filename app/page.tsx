@@ -19,7 +19,7 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-white/90 backdrop-blur-sm text-blue-700 border-blue-200">
-              ⚡ Transformmmm Your Trading Psychology for Better Results
+              ⚡ Transform Your Trading Psychology for Better Results
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg">
               Welcome to Your Trading Evolution!
