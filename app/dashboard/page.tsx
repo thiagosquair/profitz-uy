@@ -1,5 +1,6 @@
 "use client"
 
+export const dynamic = "force-dynamic";
 import { useEffect, useState } from "react"
 import Link from "next/link"
 
@@ -23,6 +24,7 @@ import {
   LiveMetricDisplay, AnimatedCounter
 } from "@/components/interactive-widgets"
 
+import { useEffect, useState } from "react"
 import { ProfileBuilderProvider } from "@/providers/profile-builder-provider"
 import { useProfileBuilder } from "@/hooks/use-profile-builder"
 import { getCurrentUser, needsPsychologyAssessment } from "@/lib/auth-simulation"
@@ -140,13 +142,5 @@ function DashboardComponent() {
         </div>
       </main>
     </div>
-  )
-}
-
-export default function DashboardPage() {
-  return (
-    <ProfileBuilderProvider>
-      <DashboardComponent />
-    </ProfileBuilderProvider>
   )
 }
