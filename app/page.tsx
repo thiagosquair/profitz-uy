@@ -22,7 +22,7 @@ export default function HomePage() {
               ⚡ Transform Your Trading Psychology for Better Results
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg">
-              Welcome to Your Trading Evolution!
+              Welcomeeee to Your Trading Evolution!
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md">
               Your fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological support
