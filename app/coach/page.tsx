@@ -1,3 +1,8 @@
+interface ChatHistoryEntry {
+  role: "user" | "coach";
+  content: string;
+}
+
 "use client"
 
 import { useState } from "react"
@@ -24,12 +29,6 @@ import {
   Lightbulb,
   Loader2,
 } from "lucide-react"
-
-// Define interfaces at the top level
-interface ChatHistoryEntry {
-  role: "user" | "coach"
-  content: string
-}
 
 interface Message {
   id: string
@@ -409,4 +408,3 @@ export default function EnhancedCoachPage() {
     </div>
   )
 }
-
