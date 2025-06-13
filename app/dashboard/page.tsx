@@ -25,7 +25,6 @@ import {
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { getCurrentUser, needsPsychologyAssessment } from "@/lib/auth-simulation"
-import { useProfileBuilder } from "@/providers/profile-builder-provider"
 import {
   InteractiveStatCard,
   AnimatedProgressRing,
@@ -42,7 +41,6 @@ export default function DashboardPage() {
     <ProfileBuilderProvider>
       {/* The content that uses useProfileBuilder goes here */}
       <DashboardContent /> 
-    </ProfileBuilderProvider>
   );
 }
 
