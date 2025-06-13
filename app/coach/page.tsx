@@ -145,7 +145,6 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Update chat history for API context, including the new user message
-    const updatedChatHistory = [...chatHistory, { role: "user" as const, content: inputMessage }]
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
@@ -185,8 +184,7 @@ export default function EnhancedCoachPage() {
 
       // Update chat history with coach response, keep last 10 for context
       setChatHistory((prev) =>
-        [...prev, { role: "coach" as const, content: data.response }].slice(-10)
-      )
+
     } catch (error) {
       console.error("Error getting AI coach response:", error)
 
@@ -395,8 +393,7 @@ export default function EnhancedCoachPage() {
                       {insight.actionable && (
                         <Badge className="ml-2" variant="secondary">
                           Actionable
-                        </Badge>
-                      )}
+
                     </div>
                   ))}
                 </CardContent>
