@@ -107,8 +107,13 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Add to chat history for context
-    const updatedChatHistory: { role: "user" | "coach"; content: string; }[] =
-  [...chatHistory, { role: "user", content: inputMessage }].slice(-10);
+    const updatedChatHistory: { role: "user" | "coach"; content: string }[] = [
+  ...chatHistory.map((entry) => ({
+    role: entry.role as "user" | "coach",
+    content: entry.content,
+  })),
+  { role: "user", content: inputMessage },
+].slice(-10);
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
