@@ -76,7 +76,7 @@ export default function EnhancedCoachPage() {
       type: "pattern",
       title: "Monday Morning Dip",
       description:
-        "Your engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
+        "Your Engagement drops 40% on Monday mornings, likely due to weekend market anxiety",
       confidence: 0.87,
       actionable: true,
     },
