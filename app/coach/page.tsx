@@ -1,3 +1,8 @@
+interface ChatHistoryEntry {
+  role: "user" | "coach";
+  content: string;
+}
+
 "use client"
 
 import { useState } from "react"
@@ -24,12 +29,6 @@ import {
   Lightbulb,
   Loader2,
 } from "lucide-react"
-
-// Define interfaces at the top level
-interface ChatHistoryEntry {
-  role: "user" | "coach"
-  content: string
-}
 
 interface Message {
   id: string
@@ -64,7 +63,7 @@ export default function EnhancedCoachPage() {
     {
       id: "1",
       content:
-        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+        "Welcome! I\'ve analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you\'re struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
       sender: "coach",
       timestamp: new Date(),
       type: "insight",
@@ -104,7 +103,7 @@ export default function EnhancedCoachPage() {
     {
       role: "coach",
       content:
-        "Welcome! I've analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you're struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
+        "Welcome! I\'ve analyzed your recent activity and noticed some interesting patterns. Your consistency has improved 23% this week, but I see you\'re struggling with emotional regulation during volatile market periods. How are you feeling about your trading psychology journey today?",
     },
   ])
 
@@ -146,10 +145,7 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Update chat history for API context, including the new user message
-    const updatedChatHistory: ChatHistoryEntry[] = [
-      ...chatHistory,
-      { role: "user", content: inputMessage }
-    ]
+    const updatedChatHistory = [...chatHistory, { role: "user" as const, content: inputMessage }]
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
@@ -188,15 +184,14 @@ export default function EnhancedCoachPage() {
       setMessages((prev) => [...prev, coachResponse])
 
       // Update chat history with coach response, keep last 10 for context
-     setChatHistory((prev) =>
+
         [...prev, { role: "coach" as const, content: data.response }].slice(-10)
       )
     } catch (error) {
       console.error("Error getting AI coach response:", error)
-
       const errorMessage: Message = {
         id: Date.now().toString(),
-        content: "I'm having trouble connecting right now. Please try again in a moment.",
+        content: "I\'m having trouble connecting right now. Please try again in a moment.",
         sender: "coach",
         timestamp: new Date(),
         type: "insight",
@@ -400,7 +395,7 @@ export default function EnhancedCoachPage() {
                         <Badge className="ml-2" variant="secondary">
                           Actionable
                         </Badge>
-                        )}
+                      )}
                     </div>
                   ))}
                 </CardContent>
@@ -412,3 +407,5 @@ export default function EnhancedCoachPage() {
     </div>
   )
 }
+
+
