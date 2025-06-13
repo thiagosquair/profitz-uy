@@ -131,7 +131,7 @@ function DashboardComponent() {
 
           {/* Live Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <LiveMetricDisplay title="Focus Score" value={85} target={100} trend="up" isLive={true} />
+            <LiveMetricDisplay title="Focus Score" value={85} target={100} unit="%" trend="up" isLive={true} />
             <LiveMetricDisplay title="Emotional Control" value={72} target={90} unit="%" trend="up" isLive={true} />
             <LiveMetricDisplay title="Consistency Rating" value={68} target={80} unit="/100" trend="stable" isLive={true} />
           </div>
