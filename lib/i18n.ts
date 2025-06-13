@@ -4,8 +4,8 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Import the configuration from next-i18next.config.js
-import nextI18nextConfig from '../next-i18next.config';
+// Import the configuration from next-i18next.config.mjs
+import nextI18nextConfig from '../next-i18next.config.mjs'; // Note the .mjs extension
 
 const isBrowser = typeof window !== 'undefined';
 
