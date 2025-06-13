@@ -9,10 +9,17 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, BookOpen, CheckCircle, FileText } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export default function ModulePage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>; // params is now a Promise
+}
+
+export default async function ModulePage({ params }: PageProps) {
   const router = useRouter()
   const [currentSection, setCurrentSection] = useState(0)
   const [completedSections, setCompletedSections] = useState<number[]>([])
+
+  const resolvedParams = await params; // Await the params Promise
+  const moduleId = resolvedParams.id; // Access the id from the resolved object
 
   // Mock module data - in real app, this would come from API/database
   const moduleData = {
@@ -24,50 +31,17 @@ export default function ModulePage({ params }: { params: { id: string } }) {
       sections: [
         {
           title: "Introduction to Trading Psychology",
-          content: `Trading psychology is the emotional and mental state that helps dictate success or failure in trading securities. It represents various aspects of an individual's character and behaviors that influence their trading actions.
-
-Key aspects include:
-• Discipline and patience
-• Courage and conviction  
-• Risk management mindset
-• Emotional regulation
-• Continuous learning attitude
-
-The most successful traders understand that psychology often matters more than technical analysis or fundamental research. Your mindset determines how you interpret market information, manage risk, and execute your trading plan.`,
+          content: `Trading psychology is the emotional and mental state that helps dictate success or failure in trading securities. It represents various aspects of an individual\\'s character and behaviors that influence their trading actions.\n\nKey aspects include:\n• Discipline and patience\n• Courage and conviction  \n• Risk management mindset\n• Emotional regulation\n• Continuous learning attitude\n\nThe most successful traders understand that psychology often matters more than technical analysis or fundamental research. Your mindset determines how you interpret market information, manage risk, and execute your trading plan.`,
           type: "reading",
         },
         {
           title: "Common Psychological Barriers",
-          content: `Most traders face similar psychological challenges that can dermine their performance:
-
-**Fear and Greed Cycle**
-Fear of missing out (FOMO) leads to impulsive entries, while fear of loss causes premature exits. Greed makes traders hold winning positions too long or risk too much capital.
-
-**Confirmation Bias**
-Seeking information that confirms existing beliefs while ignoring contradictory evidence. This leads to poor decision-making and missed opportunities.
-
-**Overconfidence**
-After a series of wins, traders may become overconfident and take excessive risks, leading to significant losses.
-
-**Loss Aversion**
-The tendency to feel losses more acutely than equivalent gains, causing traders to hold losing positions too long and cut winners too short.`,
+          content: `Most traders face similar psychological challenges that can dermine their performance:\n\n**Fear and Greed Cycle**\nFear of missing out (FOMO) leads to impulsive entries, while fear of loss causes premature exits. Greed makes traders hold winning positions too long or risk too much capital.\n\n**Confirmation Bias**\nSeeking information that confirms existing beliefs while ignoring contradictory evidence. This leads to poor decision-making and missed opportunities.\n\n**Overconfidence**\nAfter a series of wins, traders may become overconfident and take excessive risks, leading to significant losses.\n\n**Loss Aversion**\nThe tendency to feel losses more acutely than equivalent gains, causing traders to hold losing positions too long and cut winners too short.`,
           type: "reading",
         },
         {
           title: "Building Mental Resilience",
-          content: `Developing psychological resilience is crucial for long-term trading success:
-
-**1. Develop a Trading Plan**
-Having a clear, written plan removes emotion from decision-making. Your plan should include entry/exit criteria, risk management rules, and position sizing guidelines.
-
-**2. Practice Mindfulness**
-Regular mindfulness practice helps you stay present and aware of your emotional state while trading. This awareness allows you to catch emotional reactions before they impact your decisions.
-
-**3. Keep a Trading Journal**
-Document not just your trades, but your emotional state and thought processes. This helps identify patterns and triggers that affect your performance.
-
-**4. Accept Losses as Part of the Process**
-Understand that losses are inevitable and part of the learning process. Focus on following your process rather than individual trade outcomes.`,
+          content: `Developing psychological resilience is crucial for long-term trading success:\n\n**1. Develop a Trading Plan**\nHaving a clear, written plan removes emotion from decision-making. Your plan should include entry/exit criteria, risk management rules, and position sizing guidelines.\n\n**2. Practice Mindfulness**\nRegular mindfulness practice helps you stay present and aware of your emotional state while trading. This awareness allows you to catch emotional reactions before they impact your decisions.\n\n**3. Keep a Trading Journal**\nDocument not just your trades, but your emotional state and thought processes. This helps identify patterns and triggers that affect your performance.\n\n**4. Accept Losses as Part of the Process**\nUnderstand that losses are inevitable and part of the learning process. Focus on following your process rather than individual trade outcomes.`,
           type: "reading",
         },
         {
@@ -79,7 +53,7 @@ Understand that losses are inevitable and part of the learning process. Focus on
     },
   }
 
-  const module = moduleData[params.id as keyof typeof moduleData]
+  const module = moduleData[moduleId as keyof typeof moduleData]
 
   if (!module) {
     return (
