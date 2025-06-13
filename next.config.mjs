@@ -1,15 +1,12 @@
-/** @type {import("next").NextConfig} */
-const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
-  staticPageGenerationTimeout: 180, // in seconds
-}
+// next.config.js
 
-export default nextConfig;
+const { i18n } = require('./next-i18next.config');
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  i18n,
+  // Add any other Next.js configurations you have here
+};
+
+module.exports = nextConfig;
