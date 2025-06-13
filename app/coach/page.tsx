@@ -134,7 +134,7 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Update chat history for API context, including the new user message
-    const updatedChatHistory = [...chatHistory, { role: "user", content: inputMessage }]
+    const updatedChatHistory = [...chatHistory, { role: "user" as const, content: inputMessage }]
 
     setChatHistory(updatedChatHistory)
     setInputMessage("")
