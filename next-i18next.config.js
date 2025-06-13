@@ -6,8 +6,7 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en', 'es', 'fr'], // Adjust your locales as needed
   },
-  // This is important for server-side loading
-  localePath: typeof window === 'undefined'
-    ? path.resolve('./public/locales')
-    : '/locales',
+  localePath: path.resolve('./public/locales'), // Absolute path to your translation files
 };
+
+
