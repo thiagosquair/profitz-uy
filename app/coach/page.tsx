@@ -107,12 +107,12 @@ export default function EnhancedCoachPage() {
     setMessages((prev) => [...prev, userMessage])
 
     // Add to chat history for context
-  const updatedChatHistory: { role: "user" | "coach"; content: string }[] = [
-  ...chatHistory
-    .filter((entry): entry is { role: "user" | "coach"; content: string } =>
-      entry.role === "user" || entry.role === "coach"
-    ),
-];
+    const updatedChatHistory: { role: "user" | "coach"; content: string }[] = [
+      ...chatHistory.filter((entry): entry is { role: "user" | "coach"; content: string } =>
+        entry.role === "user" || entry.role === "coach"
+      ),
+      { role: "user", content: inputMessage }
+    ]
     setChatHistory(updatedChatHistory)
     setInputMessage("")
     setIsLoading(true)
@@ -251,167 +251,102 @@ export default function EnhancedCoachPage() {
                                       message.type === "intervention"
                                         ? "border-red-300 text-red-700"
                                         : message.type === "recommendation"
-                                          ? "border-blue-300 text-blue-700"
-                                          : "border-green-300 text-green-700"
+                                        ? "border-green-300 text-green-700"
+                                        : "border-yellow-300 text-yellow-700"
                                     }`}
                                   >
-                                    {message.type}
+                                    {message.type.charAt(0).toUpperCase() + message.type.slice(1)}
                                   </Badge>
                                 </div>
                               )}
-                              <p className="text-sm leading-relaxed">{message.content}</p>
-                              <p
-                                className={`text-xs mt-2 ${
-                                  message.sender === "user" ? "text-blue-100" : "text-gray-500"
-                                }`}
+                              <p className="whitespace-pre-wrap">{message.content}</p>
+                              <time
+                                className="block text-xs text-gray-400 mt-1"
+                                dateTime={message.timestamp.toISOString()}
                               >
-                                {message.timestamp.toLocaleTimeString()}
-                              </p>
+                                {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              </time>
                             </div>
                           </div>
                         </div>
                       ))}
-
                       {isLoading && (
                         <div className="flex justify-start">
-                          <div className="flex items-start space-x-2 max-w-[85%]">
+                          <div className="flex items-center space-x-2">
                             <Avatar className="h-8 w-8">
-                              <AvatarFallback>AI</AvatarFallback>
+                              <Loader2 className="animate-spin" />
                             </Avatar>
-                            <div className="rounded-lg p-4 bg-white border border-gray-200 text-gray-900">
-                              <div className="flex items-center space-x-2">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                <p className="text-sm">Analyzing your question...</p>
-                              </div>
-                            </div>
+                            <p className="text-gray-500">AI is typing...</p>
                           </div>
                         </div>
                       )}
                     </div>
                   </ScrollArea>
 
-                  <div className="flex space-x-2">
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault()
+                      sendMessage()
+                    }}
+                    className="flex space-x-2"
+                  >
                     <Input
-                      placeholder="Describe your current trading psychology challenges..."
+                      placeholder="Ask your AI Coach anything..."
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                      className="flex-1"
                       disabled={isLoading}
+                      autoFocus
+                      aria-label="User message input"
                     />
-                    <Button onClick={sendMessage} disabled={isLoading}>
-                      {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    <Button type="submit" disabled={isLoading || inputMessage.trim() === ""}>
+                      <Send className="h-4 w-4" />
                     </Button>
-                  </div>
+                  </form>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Insights Panel */}
-            <div className="space-y-6">
-              <Card>
+            {/* Sidebar with User Insights */}
+            <div>
+              <Card className="h-[600px] flex flex-col">
                 <CardHeader>
-                  <CardTitle className="text-lg">Behavioral Insights</CardTitle>
-                  <CardDescription>AI-detected patterns and recommendations</CardDescription>
+                  <CardTitle>User Insights</CardTitle>
+                  <CardDescription>
+                    Your trading psychology patterns and actionable advice
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {userInsights.map((insight, index) => (
-                    <div key={index} className={`p-3 rounded-lg border ${getInsightColor(insight.type)}`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center">
-                          {getInsightIcon(insight.type)}
-                          <span className="ml-2 font-medium text-sm">{insight.title}</span>
-                        </div>
-                        <Badge variant="outline" className="text-xs">
-                          {Math.round(insight.confidence * 100)}%
-                        </Badge>
-                      </div>
-                      <p className="text-xs leading-relaxed">{insight.description}</p>
-                      {insight.actionable && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="mt-2 text-xs"
-                          onClick={() => {
-                            if (insight.type === "risk") {
-                              window.location.href = "/learning-path?focus=risk-management"
-                            } else if (insight.type === "pattern") {
-                              window.location.href = "/analytics"
-                            }
-                            else {
-                              window.location.href = "/exercises?category=Emotional%20Regulation"
-                            }
-                          }}
+
+                <CardContent className="flex-1 overflow-y-auto space-y-4">
+                  {userInsights.map((insight, idx) => (
+                    <div
+                      key={idx}
+                      className={`border rounded p-3 ${getInsightColor(insight.type)}`}
+                      role="region"
+                      aria-labelledby={`insight-title-${idx}`}
+                      tabIndex={0}
+                    >
+                      <div className="flex items-center space-x-2 mb-1">
+                        {getInsightIcon(insight.type)}
+                        <h3
+                          id={`insight-title-${idx}`}
+                          className="font-semibold text-sm"
                         >
-                          Take Action
-                        </Button>
+                          {insight.title}
+                        </h3>
+                      </div>
+                      <p className="text-xs mb-1">{insight.description}</p>
+                      <Progress
+                        value={insight.confidence * 100}
+                        className="h-2"
+                        aria-label={`Confidence level: ${Math.round(insight.confidence * 100)}%`}
+                      />
+                      {insight.actionable && (
+                        <Badge variant="outline" className="mt-2 text-xs cursor-default">
+                          Actionable
+                        </Badge>
                       )}
                     </div>
                   ))}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Progress Metrics</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Emotional Regulation</span>
-                      <span>78%</span>
-                    </div>
-                    <Progress value={78} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Consistency Score</span>
-                      <span>85%</span>
-                    </div>
-                    <Progress value={85} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Risk Psychology</span>
-                      <span>62%</span>
-                    </div>
-                    <Progress value={62} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/exercises/emotional-checkin")}
-                  >
-                    <Target className="mr-2 h-4 w-4" />
-                    Emotional Check-In
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/analytics")}
-                  >
-                    <TrendingUp className="mr-2 h-4 w-4" />
-                    View Patterns
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full justify-start"
-                    onClick={() => (window.location.href = "/learning-path")}
-                  >
-                    <Lightbulb className="mr-2 h-4 w-4" />
-                    Get Recommended Learning Path
-                  </Button>
                 </CardContent>
               </Card>
             </div>
