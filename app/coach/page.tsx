@@ -1,8 +1,3 @@
-interface ChatHistoryEntry {
-  role: "user" | "coach";
-  content: string;
-}
-
 "use client"
 
 import { useState } from "react"
@@ -30,6 +25,12 @@ import {
   Loader2,
 } from "lucide-react"
 
+// Define interfaces at the top level
+interface ChatHistoryEntry {
+  role: "user" | "coach"
+  content: string
+}
+
 interface Message {
   id: string
   content: string
@@ -47,6 +48,17 @@ interface UserInsight {
   actionable: boolean
 }
 
+interface UserContext {
+  emotionalState: string
+  tradingExperience: string
+  recentActivity: {
+    consistency: number
+    journalEntries: number
+    completedExercises: number
+  }
+  knownPatterns: string[]
+}
+
 export default function EnhancedCoachPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -58,8 +70,8 @@ export default function EnhancedCoachPage() {
       type: "insight",
     },
   ])
-  const [inputMessage, setInputMessage] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [inputMessage, setInputMessage] = useState<string>("")
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [userInsights, setUserInsights] = useState<UserInsight[]>([
     {
       type: "pattern",
@@ -97,7 +109,7 @@ export default function EnhancedCoachPage() {
   ])
 
   // Mock user context - in a real app, this would come from user profile and activity data
-  const userContext = {
+  const userContext: UserContext = {
     emotionalState: "Mixed - some anxiety about market volatility",
     tradingExperience: "Intermediate",
     recentActivity: {
@@ -112,7 +124,7 @@ export default function EnhancedCoachPage() {
     ],
   }
 
-  const sendMessage = async () => {
+  const sendMessage = async (): Promise<void> => {
     if (!inputMessage.trim() || isLoading) return
 
     // Only call fetch in the browser environment
@@ -206,7 +218,7 @@ export default function EnhancedCoachPage() {
     }
   }
 
-  const getInsightColor = (type: string) => {
+  const getInsightColor = (type: string): string => {
     switch (type) {
       case "pattern":
         return "bg-blue-100 text-blue-800 border-blue-200"
@@ -397,5 +409,4 @@ export default function EnhancedCoachPage() {
     </div>
   )
 }
-
 
