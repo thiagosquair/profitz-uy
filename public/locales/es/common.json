@@ -44,6 +44,24 @@
   "cta_description": "Únete a miles de traders que ya han dominado su psicología y logrado rentabilidad consistente.",
   "cta_button": "Comienza Tu Prueba Gratuita",
   "footer_copyright": "© 2023 ProFitz. Todos los derechos reservados.",
+  "common": {
+    "appName": "ProFitz",
+    "tagline": "Domina Tu Psicología de Trading"
+  },
+  "navigation": {
+    "dashboard": "Panel de Control",
+    "aiCoach": "Coach IA",
+    "learningPath": "Ruta de Aprendizaje",
+    "exercises": "Ejercicios",
+    "reflections": "Reflexiones",
+    "tradeJournal": "Diario de Trading",
+    "progress": "Progreso",
+    "achievements": "Logros",
+    "subscriptionPlans": "Planes de Suscripción",
+    "settings": "Configuración",
+    "help": "Ayuda",
+    "signOut": "Cerrar Sesión"
+  },
   "dashboard": {
     "loading": "Cargando tu panel de control...",
     "psychology_prompt_title": "Desbloquea Tu Psicología de Trading",
