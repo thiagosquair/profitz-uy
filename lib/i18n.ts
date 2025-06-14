@@ -1,4 +1,4 @@
-// lib/i18n.ts - Fixed version
+// lib/i18n.ts - Debug version to troubleshoot dashboard translation
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
@@ -10,7 +10,7 @@ i18n
   .use(HttpBackend)
   .init({
     fallbackLng: 'en',
-    debug: false, // Set to true for debugging
+    debug: true, // ENABLED DEBUG MODE to see what's happening
     ns: ['common'],
     defaultNS: 'common',
     keySeparator: false,
