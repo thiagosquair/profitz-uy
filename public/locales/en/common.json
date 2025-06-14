@@ -43,5 +43,26 @@
   "cta_title": "Ready to Transform Your Trading?",
   "cta_description": "Join thousands of traders who have already mastered their psychology and achieved consistent profitability.",
   "cta_button": "Start Your Free Trial",
-  "footer_copyright": "© 2023 ProFitz. All rights reserved."
+  "footer_copyright": "© 2023 ProFitz. All rights reserved.",
+  "dashboard": {
+    "loading": "Loading your dashboard...",
+    "psychology_prompt_title": "Unlock Your Trading Psychology",
+    "psychology_prompt_subtitle": "Take our comprehensive assessment to get personalized insights",
+    "psychology_prompt_description": "Discover your trading personality, strengths, and areas for improvement.",
+    "take_assessment": "Take Assessment",
+    "maybe_later": "Maybe Later",
+    "day_badge": "Day",
+    "of_journey": "of Your Journey",
+    "welcome_back": "Welcome Back, {{name}}",
+    "welcome_description": "Your trading transformation continues. Today is a new opportunity to grow.",
+    "psychology_assessment": "Psychology Assessment",
+    "exercises_completed": "Exercises Completed",
+    "reflection_streak": "Reflection Streak",
+    "ai_coach_sessions": "AI Coach Sessions",
+    "progress_score": "Progress Score",
+    "focus_score": "Focus Score",
+    "emotional_control": "Emotional Control",
+    "consistency_rating": "Consistency Rating"
+  }
 }
+
