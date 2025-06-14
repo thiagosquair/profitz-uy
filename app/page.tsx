@@ -1,15 +1,21 @@
+// app/page.tsx - Updated with translations
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Brain, TrendingUp, Target, Star, ArrowRight, BarChart3, BookOpen, Camera } from "lucide-react"
 import Link from "next/link"
 import { Header } from "@/components/header"
+import { useTranslation } from "react-i18next"
 
 export default function HomePage() {
+  const { t } = useTranslation()
+
   return (
     <div className="min-h-screen bg-white text-gray-900">
       <Header />
-
+      
       {/* Hero Section */}
       <section
         className="relative overflow-hidden bg-cover bg-center bg-no-repeat pt-20"
@@ -19,15 +25,13 @@ export default function HomePage() {
         <div className="container mx-auto px-6 py-20 relative">
           <div className="max-w-4xl mx-auto text-center">
             <Badge className="mb-6 bg-white/90 backdrop-blur-sm text-blue-700 border-blue-200">
-              ⚡ Transformmmm Your Trading Psychology for Better Results
+              {t("hero_badge")}
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 text-white drop-shadow-lg">
-              Welcomeeee to Your Trading Evolution!
+              {t("hero_title")}
             </h1>
             <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed drop-shadow-md">
-              Your fully immersive, AI-powered trading ecosystem where every tool, insight, and psychological support
-              system is seamlessly integrated—designed to help you stay centered, focused, and consistently successful
-              in your trading career.
+              {t("hero_description")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/dashboard">
@@ -35,7 +39,7 @@ export default function HomePage() {
                   size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg"
                 >
-                  Begin Your Journey
+                  {t("hero_button_journey")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -44,7 +48,7 @@ export default function HomePage() {
                 variant="outline"
                 className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg backdrop-blur-sm"
               >
-                ▶ Watch Demo
+                {t("hero_button_demo")}
               </Button>
             </div>
           </div>
@@ -56,86 +60,84 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <Badge className="mb-6 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 border-purple-200">
-              The ProFitz Experience
+              {t("experience_badge")}
             </Badge>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Your Immersive Trading Environment
+              {t("experience_title")}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              ProFitz creates a space where transformation happens naturally, guiding you through a journey of
-              self-discovery and trading mastery.
+              {t("experience_description")}
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <Card className="bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Brain className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">AI Psychology Coach</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_ai_coach_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Get personalized coaching sessions powered by advanced AI that understands trading psychology
+                  {t("feature_ai_coach_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
-
+            
             <Card className="bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Camera className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">Trade Screenshot Analysis</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_screenshot_analysis_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Upload your trade screenshots for AI-powered analysis with market context and emotional insights
+                  {t("feature_screenshot_analysis_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
-
+            
             <Card className="bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <BarChart3 className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">Market Data Integration</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_market_data_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Real-time market context and historical data to understand how conditions affect your trading
+                  {t("feature_market_data_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
-
+            
             <Card className="bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <Target className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">Behavioral Pattern Recognition</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_behavioral_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Identify and break negative trading patterns while reinforcing profitable behaviors
+                  {t("feature_behavioral_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
-
+            
             <Card className="bg-white border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">Interactive Exercises</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_interactive_exercises_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Daily mental discipline exercises designed specifically for traders
+                  {t("feature_interactive_exercises_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
-
+            
             <Card className="bg-white border-gray-200 hover:border-purple-300 hover:shadow-lg transition-all duration-300 group">
               <CardHeader>
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <TrendingUp className="h-6 w-6 text-white" />
                 </div>
-                <CardTitle className="text-gray-900">Progress Tracking</CardTitle>
+                <CardTitle className="text-gray-900">{t("feature_progress_tracking_title")}</CardTitle>
                 <CardDescription className="text-gray-600">
-                  Comprehensive analytics to track your psychological development and trading improvement
+                  {t("feature_progress_tracking_description")}
                 </CardDescription>
               </CardHeader>
             </Card>
@@ -148,52 +150,50 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Your Path to Trading Mastery
+              {t("how_it_works_title")}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Follow our proven 4-step process to develop unshakeable trading discipline
+              {t("how_it_works_description")}
             </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                <span className="text-2xl font-bold text-white">1</span>
+                <span className="text-2xl font-bold text-white">{t("step_1_title")}</span>
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-900">Assessment</h3>
               <p className="text-gray-600">
-                Complete our comprehensive trading psychology assessment to identify your strengths and areas for
-                improvement
+                {t("step_1_description")}
               </p>
             </div>
-
+            
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                <span className="text-2xl font-bold text-white">2</span>
+                <span className="text-2xl font-bold text-white">{t("step_2_title")}</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">Personalized Plan</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Personalization</h3>
               <p className="text-gray-600">
-                Receive a customized development plan with exercises and coaching sessions tailored to your needs
+                {t("step_2_description")}
               </p>
             </div>
-
+            
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                <span className="text-2xl font-bold text-white">3</span>
+                <span className="text-2xl font-bold text-white">{t("step_3_title")}</span>
               </div>
-              <h3 className="text-xl font-semibold mb-4 text-gray-900">Daily Practice</h3>
+              <h3 className="text-xl font-semibold mb-4 text-gray-900">Practice</h3>
               <p className="text-gray-600">
-                Engage with daily exercises, AI coaching sessions, and trade analysis to build mental discipline
+                {t("step_3_description")}
               </p>
             </div>
-
+            
             <div className="text-center group">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform shadow-lg">
-                <span className="text-2xl font-bold text-white">4</span>
+                <span className="text-2xl font-bold text-white">{t("step_4_title")}</span>
               </div>
               <h3 className="text-xl font-semibold mb-4 text-gray-900">Mastery</h3>
               <p className="text-gray-600">
-                Achieve consistent profitability through improved emotional control and disciplined decision-making
+                {t("step_4_description")}
               </p>
             </div>
           </div>
@@ -205,82 +205,61 @@ export default function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              Trusted by Successful Traders
+              {t("testimonials_title")}
             </h2>
-            <p className="text-xl text-gray-600">See how our platform has transformed trading careers</p>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {t("testimonials_description")}
+            </p>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="bg-white border-gray-200 shadow-lg">
+            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
               <CardHeader>
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <CardDescription className="text-gray-600 text-lg">
-                  "The AI coach helped me identify my revenge trading patterns. My consistency improved by 300% in just
-                  3 months."
+                <CardDescription className="text-gray-700 text-lg italic">
+                  {t("testimonial_1_description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="font-bold text-white">MK</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Michael K.</p>
-                    <p className="text-sm text-gray-600">Day Trader, 5 years experience</p>
-                  </div>
-                </div>
+                <div className="text-gray-900 font-semibold">{t("testimonial_1_name")}</div>
+                <div className="text-gray-600">{t("testimonial_1_role")}</div>
               </CardContent>
             </Card>
-
-            <Card className="bg-white border-gray-200 shadow-lg">
+            
+            <Card className="bg-gradient-to-br from-purple-50 to-blue-50 border-purple-200">
               <CardHeader>
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <CardDescription className="text-gray-600 text-lg">
-                  "The trade analysis feature is incredible. It shows me exactly how my emotions affected each trade."
+                <CardDescription className="text-gray-700 text-lg italic">
+                  {t("testimonial_2_description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="font-bold text-white">SR</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">Sarah R.</p>
-                    <p className="text-sm text-gray-600">Swing Trader, 8 years experience</p>
-                  </div>
-                </div>
+                <div className="text-gray-900 font-semibold">{t("testimonial_2_name")}</div>
+                <div className="text-gray-600">{t("testimonial_2_role")}</div>
               </CardContent>
             </Card>
-
-            <Card className="bg-white border-gray-200 shadow-lg">
+            
+            <Card className="bg-gradient-to-br from-blue-50 to-purple-50 border-blue-200">
               <CardHeader>
                 <div className="flex items-center mb-4">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <CardDescription className="text-gray-600 text-lg">
-                  "Finally broke through my profit ceiling. The psychological insights are game-changing."
+                <CardDescription className="text-gray-700 text-lg italic">
+                  {t("testimonial_3_description")}
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-4">
-                    <span className="font-bold text-white">DL</span>
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">David L.</p>
-                    <p className="text-sm text-gray-600">Options Trader, 12 years experience</p>
-                  </div>
-                </div>
+                <div className="text-gray-900 font-semibold">{t("testimonial_3_name")}</div>
+                <div className="text-gray-600">{t("testimonial_3_role")}</div>
               </CardContent>
             </Card>
           </div>
@@ -288,115 +267,35 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-600" id="pricing">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">Ready to Transform Your Trading?</h2>
-            <p className="text-xl text-blue-100 mb-8">
-              Join thousands of traders who have already mastered their psychology and achieved consistent
-              profitability.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/dashboard">
-                <Button
-                  size="lg"
-                  className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg"
-                >
-                  Start Free Trial
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg"
-              >
-                Schedule Demo
-              </Button>
-            </div>
-            <p className="text-sm text-blue-100 mt-4">No credit card required • 14-day free trial • Cancel anytime</p>
-          </div>
+      <section className="py-20 bg-gradient-to-br from-blue-600 to-purple-600">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            {t("cta_title")}
+          </h2>
+          <p className="text-xl text-white/90 mb-8 max-w-3xl mx-auto">
+            {t("cta_description")}
+          </p>
+          <Link href="/signup">
+            <Button
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg shadow-lg"
+            >
+              {t("cta_button")}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                ProFitz
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Master the mental game of trading with AI-powered psychology coaching.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Platform</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/features" className="hover:text-blue-400 transition-colors">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/pricing" className="hover:text-blue-400 transition-colors">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/demo" className="hover:text-blue-400 transition-colors">
-                    Demo
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Resources</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/blog" className="hover:text-purple-400 transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/guides" className="hover:text-purple-400 transition-colors">
-                    Trading Guides
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/support" className="hover:text-purple-400 transition-colors">
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <Link href="/about" className="hover:text-blue-400 transition-colors">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="hover:text-blue-400 transition-colors">
-                    Contact
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/privacy" className="hover:text-blue-400 transition-colors">
-                    Privacy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 ProFitz. All rights reserved.</p>
-          </div>
+      <footer className="bg-gray-900 text-white py-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-gray-400">
+            {t("footer_copyright")}
+          </p>
         </div>
       </footer>
     </div>
   )
 }
+
