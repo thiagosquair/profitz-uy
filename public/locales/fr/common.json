@@ -1,7 +1,7 @@
 {
   "hero_badge": "⚡ Transformez Votre Psychologie de Trading pour de Meilleurs Résultats",
   "hero_title": "Bienvenue dans Votre Évolution Trading !",
-  "hero_description": "Votre écosystème de trading entièrement immersif et alimenté par l'IA où chaque outil, insight et système de soutien psychologique est parfaitement intégré—conçu pour vous aider à rester centré, concentré et constamment réussi dans votre carrière de trading.",
+  "hero_description": "Votre écosystème de trading complètement immersif et alimenté par l'IA où chaque outil, insight et système de soutien psychologique est parfaitement intégré—conçu pour vous aider à rester centré, concentré et constamment réussi dans votre carrière de trading.",
   "hero_button_journey": "Commencez Votre Voyage",
   "hero_button_demo": "▶ Regarder la Démo",
   "experience_badge": "L'Expérience ProFitz",
@@ -44,10 +44,28 @@
   "cta_description": "Rejoignez des milliers de traders qui ont déjà maîtrisé leur psychologie et atteint une rentabilité constante.",
   "cta_button": "Commencez Votre Essai Gratuit",
   "footer_copyright": "© 2023 ProFitz. Tous droits réservés.",
+  "common": {
+    "appName": "ProFitz",
+    "tagline": "Maîtrisez Votre Psychologie de Trading"
+  },
+  "navigation": {
+    "dashboard": "Tableau de Bord",
+    "aiCoach": "Coach IA",
+    "learningPath": "Parcours d'Apprentissage",
+    "exercises": "Exercices",
+    "reflections": "Réflexions",
+    "tradeJournal": "Journal de Trading",
+    "progress": "Progrès",
+    "achievements": "Réalisations",
+    "subscriptionPlans": "Plans d'Abonnement",
+    "settings": "Paramètres",
+    "help": "Aide",
+    "signOut": "Se Déconnecter"
+  },
   "dashboard": {
     "loading": "Chargement de votre tableau de bord...",
     "psychology_prompt_title": "Débloquez Votre Psychologie de Trading",
-    "psychology_prompt_subtitle": "Passez notre évaluation complète pour obtenir des insights personnalisés",
+    "psychology_prompt_subtitle": "Passez notre évaluation complète pour des insights personnalisés",
     "psychology_prompt_description": "Découvrez votre personnalité de trading, vos forces et domaines d'amélioration.",
     "take_assessment": "Passer l'Évaluation",
     "maybe_later": "Peut-être Plus Tard",
