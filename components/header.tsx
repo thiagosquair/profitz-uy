@@ -1,3 +1,4 @@
+// components/header.tsx - Updated with Language Switcher
 "use client"
 
 import { useState, useEffect } from "react"
@@ -6,6 +7,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { Menu, X, LogIn, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { getCurrentUser, simulateSignOut } from "@/lib/auth-simulation"
 
 export function Header() {
@@ -41,13 +43,15 @@ export function Header() {
     window.location.href = "/"
   }
 
-  // Only show on landing page
+  // Only show on landing page if user is not logged in
   if (!isLandingPage && !user) return null
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-200" : "bg-white/80 backdrop-blur-sm"
+        isScrolled
+          ? "bg-white/95 backdrop-blur-sm shadow-md border-b border-gray-200"
+          : "bg-white/80 backdrop-blur-sm"
       }`}
     >
       <div className="container mx-auto px-4 py-3">
@@ -70,39 +74,66 @@ export function Header() {
           <nav className="hidden md:flex items-center space-x-8">
             {isLandingPage ? (
               <>
-                <a href="#features" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <a
+                  href="#features"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
                   Features
                 </a>
-                <a href="#how-it-works" className="text-gray-700 hover:text-purple-600 transition-colors">
+                <a
+                  href="#how-it-works"
+                  className="text-gray-700 hover:text-purple-600 transition-colors"
+                >
                   How It Works
                 </a>
-                <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <a
+                  href="#testimonials"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
                   Testimonials
                 </a>
-                <a href="#pricing" className="text-gray-700 hover:text-purple-600 transition-colors">
+                <a
+                  href="#pricing"
+                  className="text-gray-700 hover:text-purple-600 transition-colors"
+                >
                   Pricing
                 </a>
               </>
             ) : user ? (
               <>
-                <Link href="/dashboard" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <Link
+                  href="/dashboard"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
                   Dashboard
                 </Link>
-                <Link href="/trade-journal" className="text-gray-700 hover:text-purple-600 transition-colors">
+                <Link
+                  href="/trade-journal"
+                  className="text-gray-700 hover:text-purple-600 transition-colors"
+                >
                   Trade Journal
                 </Link>
-                <Link href="/analytics" className="text-gray-700 hover:text-blue-600 transition-colors">
+                <Link
+                  href="/analytics"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
                   Analytics
                 </Link>
-                <Link href="/coach" className="text-gray-700 hover:text-purple-600 transition-colors">
+                <Link
+                  href="/coach"
+                  className="text-gray-700 hover:text-purple-600 transition-colors"
+                >
                   AI Coach
                 </Link>
               </>
             ) : null}
           </nav>
 
-          {/* Auth Buttons or User Menu */}
+          {/* Right side: Language Switcher + Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+            
             {user ? (
               <div className="flex items-center space-x-4">
                 <div className="text-gray-700">
@@ -121,7 +152,10 @@ export function Header() {
             ) : (
               <>
                 <Link href="/signin">
-                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-blue-600"
+                  >
                     <LogIn className="mr-2 h-4 w-4" />
                     Sign In
                   </Button>
@@ -137,7 +171,11 @@ export function Header() {
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden text-gray-700 hover:text-blue-600" onClick={toggleMenu} aria-label="Toggle menu">
+          <button
+            className="md:hidden text-gray-700 hover:text-blue-600"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -212,6 +250,14 @@ export function Header() {
                 </>
               ) : null}
 
+              {/* Language Switcher for Mobile */}
+              <div className="py-2 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-700 font-medium">Language</span>
+                  <LanguageSwitcher />
+                </div>
+              </div>
+
               {/* Auth Buttons for Mobile */}
               <div className="pt-4 border-t border-gray-200">
                 {user ? (
@@ -233,7 +279,10 @@ export function Header() {
                 ) : (
                   <div className="flex flex-col space-y-4">
                     <Link href="/signin" onClick={() => setIsMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full text-gray-700 hover:text-blue-600">
+                      <Button
+                        variant="ghost"
+                        className="w-full text-gray-700 hover:text-blue-600"
+                      >
                         <LogIn className="mr-2 h-4 w-4" />
                         Sign In
                       </Button>
@@ -254,3 +303,4 @@ export function Header() {
     </header>
   )
 }
+
