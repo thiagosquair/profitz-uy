@@ -1,4 +1,4 @@
-// app/dashboard/dashboard-content.tsx
+// app/dashboard/dashboard-content.tsx - Debug version to troubleshoot translation
 "use client"
 
 import Link from "next/link"
@@ -14,20 +14,28 @@ import { useTranslation } from "react-i18next"
 import { getCurrentUser, needsPsychologyAssessment } from "@/lib/auth-simulation"
 
 export default function DashboardContent() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [user, setUser] = useState<any>(null)
   const [showPsychologyPrompt, setShowPsychologyPrompt] = useState(false)
 
   useEffect(() => {
     const currentUser = getCurrentUser()
     setUser(currentUser)
+    
     if (currentUser && needsPsychologyAssessment()) {
       setShowPsychologyPrompt(true)
     }
-  }, [])
+
+    // DEBUG: Log i18n status
+    console.log("🔍 Dashboard Debug Info:")
+    console.log("Current language:", i18n.language)
+    console.log("Available languages:", i18n.languages)
+    console.log("Is i18n initialized:", i18n.isInitialized)
+    console.log("Translation test:", t("dashboard.loading"))
+    console.log("Translation test (raw):", t("dashboard.loading", { returnObjects: true }))
+  }, [i18n, t])
 
   const handleTakePsychologyAssessment = () => {
-    // For now, just hide the prompt - we'll implement the modal later
     setShowPsychologyPrompt(false)
   }
 
@@ -37,6 +45,12 @@ export default function DashboardContent() {
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-gray-600">{t("dashboard.loading")}</p>
+          {/* DEBUG: Show raw translation */}
+          <p className="text-xs text-red-500 mt-2">DEBUG: {JSON.stringify({ 
+            lang: i18n.language, 
+            loading: t("dashboard.loading"),
+            initialized: i18n.isInitialized 
+          })}</p>
         </div>
       </div>
     )
@@ -47,6 +61,16 @@ export default function DashboardContent() {
       <Navigation />
       <main className="flex-1 p-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
+          {/* DEBUG INFO */}
+          <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg">
+            <h3 className="font-bold text-yellow-800">🔍 DEBUG INFO</h3>
+            <p className="text-sm text-yellow-700">
+              Language: {i18n.language} | 
+              Initialized: {i18n.isInitialized ? "✅" : "❌"} | 
+              Loading test: "{t("dashboard.loading")}"
+            </p>
+          </div>
+
           {/* Psychology Prompt */}
           {showPsychologyPrompt && (
             <Card className="mb-8 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
@@ -70,16 +94,16 @@ export default function DashboardContent() {
                   {t("dashboard.psychology_prompt_description")}
                 </p>
                 <div className="flex gap-3">
-                  <Button 
-                    onClick={handleTakePsychologyAssessment} 
+                  <Button
+                    onClick={handleTakePsychologyAssessment}
                     className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600 font-semibold"
                   >
                     <Brain className="h-4 w-4 mr-2" />
                     {t("dashboard.take_assessment")}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setShowPsychologyPrompt(false)} 
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowPsychologyPrompt(false)}
                     className="border-gray-300 text-gray-600 hover:bg-gray-100"
                   >
                     {t("dashboard.maybe_later")}
@@ -102,10 +126,10 @@ export default function DashboardContent() {
             </h1>
             <p className="text-gray-600">{t("dashboard.welcome_description")}</p>
             <div className="flex gap-2 mt-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowPsychologyPrompt(true)} 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPsychologyPrompt(true)}
                 className="border-purple-200 text-purple-600 hover:bg-purple-50"
               >
                 <Brain className="h-4 w-4 mr-2" />
@@ -116,63 +140,63 @@ export default function DashboardContent() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <InteractiveStatCard 
-              title={t("dashboard.exercises_completed")} 
-              value={12} 
-              change={16.7} 
-              icon={Target} 
-              color="#8b5cf6" 
+            <InteractiveStatCard
+              title={t("dashboard.exercises_completed")}
+              value={12}
+              change={16.7}
+              icon={Target}
+              color="#8b5cf6"
             />
-            <InteractiveStatCard 
-              title={t("dashboard.reflection_streak")} 
-              value={7} 
-              change={14.3} 
-              icon={Flame} 
-              color="#8b5cf6" 
-              suffix=" days" 
+            <InteractiveStatCard
+              title={t("dashboard.reflection_streak")}
+              value={7}
+              change={14.3}
+              icon={Flame}
+              color="#8b5cf6"
+              suffix=" days"
             />
-            <InteractiveStatCard 
-              title={t("dashboard.ai_coach_sessions")} 
-              value={24} 
-              change={20.0} 
-              icon={Brain} 
-              color="#8b5cf6" 
+            <InteractiveStatCard
+              title={t("dashboard.ai_coach_sessions")}
+              value={24}
+              change={20.0}
+              icon={Brain}
+              color="#8b5cf6"
             />
-            <InteractiveStatCard 
-              title={t("dashboard.progress_score")} 
-              value={78} 
-              change={8.3} 
-              icon={Award} 
-              color="#8b5cf6" 
-              suffix="%" 
+            <InteractiveStatCard
+              title={t("dashboard.progress_score")}
+              value={78}
+              change={8.3}
+              icon={Award}
+              color="#8b5cf6"
+              suffix="%"
             />
           </div>
 
           {/* Live Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <LiveMetricDisplay 
-              title={t("dashboard.focus_score")} 
-              value={85} 
-              target={100} 
-              unit="%" 
-              trend="up" 
-              isLive={true} 
+            <LiveMetricDisplay
+              title={t("dashboard.focus_score")}
+              value={85}
+              target={100}
+              unit="%"
+              trend="up"
+              isLive={true}
             />
-            <LiveMetricDisplay 
-              title={t("dashboard.emotional_control")} 
-              value={72} 
-              target={90} 
-              unit="%" 
-              trend="up" 
-              isLive={true} 
+            <LiveMetricDisplay
+              title={t("dashboard.emotional_control")}
+              value={72}
+              target={90}
+              unit="%"
+              trend="up"
+              isLive={true}
             />
-            <LiveMetricDisplay 
-              title={t("dashboard.consistency_rating")} 
-              value={68} 
-              target={80} 
-              unit="/100" 
-              trend="stable" 
-              isLive={true} 
+            <LiveMetricDisplay
+              title={t("dashboard.consistency_rating")}
+              value={68}
+              target={80}
+              unit="/100"
+              trend="stable"
+              isLive={true}
             />
           </div>
 
@@ -222,7 +246,7 @@ export default function DashboardContent() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 mb-4">Analyze your recent trades and emotions.</p>
+                <p className="text-gray-600 mb-4">Record and analyze your latest trades.</p>
                 <Button className="w-full bg-purple-500 hover:bg-purple-600">
                   Open Journal
                 </Button>
