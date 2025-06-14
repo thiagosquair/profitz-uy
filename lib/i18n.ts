@@ -1,19 +1,16 @@
-// lib/i18n.ts (or wherever you initialize i18next)
-
+// lib/i18n.ts - Fixed version
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpBackend from 'i18next-http-backend';
 
-// next-i18next.config.js is not directly imported here for client-side setup
-// The configuration will be passed via props or context from server-side
-
 i18n
   .use(initReactI18next)
   .use(LanguageDetector)
-  .use(HttpBackend) // Always use HttpBackend for client-side
+  .use(HttpBackend)
   .init({
     fallbackLng: 'en',
+    debug: false, // Set to true for debugging
     ns: ['common'],
     defaultNS: 'common',
     keySeparator: false,
@@ -26,8 +23,12 @@ i18n
     backend: {
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
+    detection: {
+      order: ['localStorage', 'navigator', 'htmlTag'],
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
+    },
   });
 
 export default i18n;
-
 
