@@ -1,4 +1,4 @@
-// components/header.tsx - Updated with Language Switcher
+// components/header.tsx - Updated with Language Switcher and useTranslation
 "use client"
 
 import { useState, useEffect } from "react"
@@ -9,8 +9,10 @@ import { Menu, X, LogIn, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { getCurrentUser, simulateSignOut } from "@/lib/auth-simulation"
+import { useTranslation } from "react-i18next" // Import useTranslation
 
 export function Header() {
+  const { t } = useTranslation() // Initialize useTranslation
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [user, setUser] = useState<any>(null)
@@ -78,25 +80,25 @@ export function Header() {
                   href="#features"
                   className="text-gray-700 hover:text-blue-600 transition-colors"
                 >
-                  Features
+                  {t("header.features")}
                 </a>
                 <a
                   href="#how-it-works"
                   className="text-gray-700 hover:text-purple-600 transition-colors"
                 >
-                  How It Works
+                  {t("header.howItWorks")}
                 </a>
                 <a
                   href="#testimonials"
                   className="text-gray-700 hover:text-blue-600 transition-colors"
                 >
-                  Testimonials
+                  {t("header.testimonials")}
                 </a>
                 <a
                   href="#pricing"
                   className="text-gray-700 hover:text-purple-600 transition-colors"
                 >
-                  Pricing
+                  {t("header.pricing")}
                 </a>
               </>
             ) : user ? (
@@ -105,25 +107,25 @@ export function Header() {
                   href="/dashboard"
                   className="text-gray-700 hover:text-blue-600 transition-colors"
                 >
-                  Dashboard
+                  {t("header.dashboard")}
                 </Link>
                 <Link
                   href="/trade-journal"
                   className="text-gray-700 hover:text-purple-600 transition-colors"
                 >
-                  Trade Journal
+                  {t("header.tradeJournal")}
                 </Link>
                 <Link
                   href="/analytics"
                   className="text-gray-700 hover:text-blue-600 transition-colors"
                 >
-                  Analytics
+                  {t("header.analytics")}
                 </Link>
                 <Link
                   href="/coach"
                   className="text-gray-700 hover:text-purple-600 transition-colors"
                 >
-                  AI Coach
+                  {t("header.aiCoach")}
                 </Link>
               </>
             ) : null}
@@ -146,7 +148,7 @@ export function Header() {
                   className="border-blue-300 text-blue-600 hover:bg-blue-50"
                   onClick={handleSignOut}
                 >
-                  Sign Out
+                  {t("header.signOut")}
                 </Button>
               </div>
             ) : (
@@ -157,13 +159,13 @@ export function Header() {
                     className="text-gray-700 hover:text-blue-600"
                   >
                     <LogIn className="mr-2 h-4 w-4" />
-                    Sign In
+                    {t("header.signIn")}
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
                     <UserPlus className="mr-2 h-4 w-4" />
-                    Sign Up
+                    {t("header.signUp")}
                   </Button>
                 </Link>
               </>
@@ -193,28 +195,28 @@ export function Header() {
                     className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Features
+                    {t("header.features")}
                   </a>
                   <a
                     href="#how-it-works"
                     className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    How It Works
+                    {t("header.howItWorks")}
                   </a>
                   <a
                     href="#testimonials"
                     className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Testimonials
+                    {t("header.testimonials")}
                   </a>
                   <a
                     href="#pricing"
                     className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Pricing
+                    {t("header.pricing")}
                   </a>
                 </>
               ) : user ? (
@@ -224,28 +226,28 @@ export function Header() {
                     className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Dashboard
+                    {t("header.dashboard")}
                   </Link>
                   <Link
                     href="/trade-journal"
                     className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Trade Journal
+                    {t("header.tradeJournal")}
                   </Link>
                   <Link
                     href="/analytics"
                     className="text-gray-700 hover:text-blue-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Analytics
+                    {t("header.analytics")}
                   </Link>
                   <Link
                     href="/coach"
                     className="text-gray-700 hover:text-purple-600 transition-colors py-2"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    AI Coach
+                    {t("header.aiCoach")}
                   </Link>
                 </>
               ) : null}
@@ -253,7 +255,7 @@ export function Header() {
               {/* Language Switcher for Mobile */}
               <div className="py-2 border-t border-gray-200">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-700 font-medium">Language</span>
+                  <span className="text-gray-700 font-medium">{t("header.language")}</span>
                   <LanguageSwitcher />
                 </div>
               </div>
@@ -263,7 +265,7 @@ export function Header() {
                 {user ? (
                   <div className="flex flex-col space-y-4">
                     <div className="text-gray-700">
-                      Signed in as{" "}
+                      {t("header.signedInAs")}{" "}
                       <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent font-semibold">
                         {user.name}
                       </span>
@@ -273,7 +275,7 @@ export function Header() {
                       className="border-blue-300 text-blue-600 hover:bg-blue-50"
                       onClick={handleSignOut}
                     >
-                      Sign Out
+                      {t("header.signOut")}
                     </Button>
                   </div>
                 ) : (
@@ -284,13 +286,13 @@ export function Header() {
                         className="w-full text-gray-700 hover:text-blue-600"
                       >
                         <LogIn className="mr-2 h-4 w-4" />
-                        Sign In
+                        {t("header.signIn")}
                       </Button>
                     </Link>
                     <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
                       <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:from-blue-600 hover:to-purple-600">
                         <UserPlus className="mr-2 h-4 w-4" />
-                        Sign Up
+                        {t("header.signUp")}
                       </Button>
                     </Link>
                   </div>
@@ -303,4 +305,5 @@ export function Header() {
     </header>
   )
 }
+
 
