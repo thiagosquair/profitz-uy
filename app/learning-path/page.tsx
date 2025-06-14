@@ -20,6 +20,8 @@ import {
   PenTool,
   BarChart3,
 } from "lucide-react"
+import { useTranslation } from "react-i18next" // Import useTranslation
+import { useRouter } from "next/navigation"
 
 interface ModuleProgress {
   id: string
@@ -32,36 +34,38 @@ interface ModuleProgress {
 }
 
 export default function LearningPathPage() {
+  const { t } = useTranslation() // Initialize useTranslation
   const [selectedPath, setSelectedPath] = useState<"core" | "remedial" | "advanced">("core")
+  const router = useRouter()
 
   const learningPaths = {
     core: {
-      title: "Core Trading Psychology Journey",
-      description: "Master the fundamental principles from 'The Secrets of a Profitable Mind'",
+      title: t("learningPath.coreTitle"),
+      description: t("learningPath.coreDescription"),
       totalModules: 12,
       completedModules: 5,
-      estimatedDuration: "8-10 weeks",
+      estimatedDuration: t("learningPath.coreDuration"),
     },
     remedial: {
-      title: "Foundation Strengthening Path",
-      description: "Reinforce core concepts with additional practice and simplified explanations",
+      title: t("learningPath.remedialTitle"),
+      description: t("learningPath.remedialDescription"),
       totalModules: 8,
       completedModules: 3,
-      estimatedDuration: "4-6 weeks",
+      estimatedDuration: t("learningPath.remedialDuration"),
     },
     advanced: {
-      title: "Advanced Psychology Mastery",
-      description: "Deep dive into complex trading psychology and advanced strategies",
+      title: t("learningPath.advancedTitle"),
+      description: t("learningPath.advancedDescription"),
       totalModules: 15,
       completedModules: 2,
-      estimatedDuration: "12-16 weeks",
+      estimatedDuration: t("learningPath.advancedDuration"),
     },
   }
 
   const coreModules: ModuleProgress[] = [
     {
       id: "ch1",
-      title: "The Psychology of Trading Success",
+      title: t("module.psychologyOfTradingSuccess.title"),
       type: "chapter",
       status: "completed",
       progress: 100,
@@ -70,7 +74,7 @@ export default function LearningPathPage() {
     },
     {
       id: "ex1",
-      title: "Self-Assessment: Trading Mindset",
+      title: t("module.selfAssessmentTradingMindset.title"),
       type: "exercise",
       status: "completed",
       progress: 100,
@@ -79,7 +83,7 @@ export default function LearningPathPage() {
     },
     {
       id: "ch2",
-      title: "Emotional Regulation Fundamentals",
+      title: t("module.emotionalRegulationFundamentals.title"),
       type: "chapter",
       status: "completed",
       progress: 100,
@@ -88,7 +92,7 @@ export default function LearningPathPage() {
     },
     {
       id: "ex2",
-      title: "Emotion Tracking Exercise",
+      title: t("module.emotionTrackingExercise.title"),
       type: "exercise",
       status: "in-progress",
       progress: 60,
@@ -97,7 +101,7 @@ export default function LearningPathPage() {
     },
     {
       id: "as1",
-      title: "Module 1 Assessment",
+      title: t("module.module1Assessment.title"),
       type: "assessment",
       status: "available",
       progress: 0,
@@ -106,7 +110,7 @@ export default function LearningPathPage() {
     },
     {
       id: "ch3",
-      title: "Risk Management Psychology",
+      title: t("module.riskManagementPsychology.title"),
       type: "chapter",
       status: "locked",
       progress: 0,
@@ -163,8 +167,8 @@ export default function LearningPathPage() {
       <main className="flex-1 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Path</h1>
-            <p className="text-gray-600">Your personalized journey through trading psychology mastery</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("learningPath.title")}</h1>
+            <p className="text-gray-600">{t("learningPath.description")}</p>
           </div>
 
           {/* Path Selection */}
@@ -184,15 +188,16 @@ export default function LearningPathPage() {
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span>Progress</span>
+                      <span>{t("learningPath.progress")}
+</span>
                       <span>
-                        {path.completedModules}/{path.totalModules} modules
+                        {path.completedModules}/{path.totalModules} {t("learningPath.modules")}
                       </span>
                     </div>
                     <Progress value={(path.completedModules / path.totalModules) * 100} />
                     <div className="flex justify-between text-sm text-gray-500">
                       <span>{path.estimatedDuration}</span>
-                      <Badge variant="outline">{key}</Badge>
+                      <Badge variant="outline">{t(`learningPath.badge.${key}`)}</Badge>
                     </div>
                   </div>
                 </CardContent>
@@ -203,9 +208,9 @@ export default function LearningPathPage() {
           {/* Current Path Details */}
           <Tabs defaultValue="modules" className="space-y-6">
             <TabsList>
-              <TabsTrigger value="modules">Modules</TabsTrigger>
-              <TabsTrigger value="progress">Progress</TabsTrigger>
-              <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+              <TabsTrigger value="modules">{t("learningPath.tabs.modules")}</TabsTrigger>
+              <TabsTrigger value="progress">{t("learningPath.tabs.progress")}</TabsTrigger>
+              <TabsTrigger value="recommendations">{t("learningPath.tabs.recommendations")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="modules" className="space-y-4">
@@ -216,7 +221,7 @@ export default function LearningPathPage() {
                     {learningPaths[selectedPath].title}
                   </CardTitle>
                   <CardDescription>
-                    Complete modules in sequence to build comprehensive trading psychology skills
+                    {t("learningPath.modulesDescription")}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -242,10 +247,10 @@ export default function LearningPathPage() {
                                 <span className="ml-2">{module.title}</span>
                               </h3>
                               <div className="flex items-center space-x-2 mt-1">
-                                <Badge className={getDifficultyColor(module.difficulty)}>{module.difficulty}</Badge>
+                                <Badge className={getDifficultyColor(module.difficulty)}>{t(`difficulty.${module.difficulty}`)}</Badge>
                                 <span className="text-sm text-gray-500 flex items-center">
                                   <Clock className="h-3 w-3 mr-1" />
-                                  {module.estimatedTime} min
+                                  {module.estimatedTime} {t("common.minutes")}
                                 </span>
                               </div>
                             </div>
@@ -267,13 +272,7 @@ export default function LearningPathPage() {
                                 }
                               }}
                             >
-                              {module.status === "completed"
-                                ? "Review"
-                                : module.status === "in-progress"
-                                  ? "Continue"
-                                  : module.status === "locked"
-                                    ? "Locked"
-                                    : "Start"}
+                              {t(`module.status.${module.status}`)}
                             </Button>
                           </div>
                         </div>
@@ -288,27 +287,30 @@ export default function LearningPathPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Learning Progress</CardTitle>
+                    <CardTitle>{t("learningPath.progressCard.title")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Overall Completion</span>
+                          <span>{t("learningPath.progressCard.overallCompletion")}
+</span>
                           <span>42%</span>
                         </div>
                         <Progress value={42} />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Exercises Completed</span>
+                          <span>{t("learningPath.progressCard.exercisesCompleted")}
+</span>
                           <span>8/15</span>
                         </div>
                         <Progress value={53} />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Assessments Passed</span>
+                          <span>{t("learningPath.progressCard.assessmentsPassed")}
+</span>
                           <span>2/5</span>
                         </div>
                         <Progress value={40} />
@@ -319,27 +321,30 @@ export default function LearningPathPage() {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>Skill Development</CardTitle>
+                    <CardTitle>{t("learningPath.skillDevelopmentCard.title")}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Emotional Regulation</span>
+                          <span>{t("learningPath.skillDevelopmentCard.emotionalRegulation")}
+</span>
                           <span>75%</span>
                         </div>
                         <Progress value={75} />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Risk Management</span>
+                          <span>{t("learningPath.skillDevelopmentCard.riskManagement")}
+</span>
                           <span>45%</span>
                         </div>
                         <Progress value={45} />
                       </div>
                       <div>
                         <div className="flex justify-between text-sm mb-1">
-                          <span>Discipline & Consistency</span>
+                          <span>{t("learningPath.skillDevelopmentCard.disciplineConsistency")}
+</span>
                           <span>60%</span>
                         </div>
                         <Progress value={60} />
@@ -355,42 +360,42 @@ export default function LearningPathPage() {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <TrendingUp className="mr-2 h-5 w-5" />
-                    AI Recommendations
+                    {t("learningPath.recommendationsCard.title")}
                   </CardTitle>
-                  <CardDescription>Personalized suggestions based on your progress and performance</CardDescription>
+                  <CardDescription>{t("learningPath.recommendationsCard.description")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                      <h3 className="font-semibold text-blue-900 mb-2">Focus Area: Risk Management</h3>
+                      <h3 className="font-semibold text-blue-900 mb-2">{t("learningPath.recommendationsCard.focusArea.title")}
+</h3>
                       <p className="text-blue-800 text-sm mb-3">
-                        Your assessment scores indicate room for improvement in risk psychology. Consider reviewing
-                        Chapter 3 and completing additional risk management exercises.
+                        {t("learningPath.recommendationsCard.focusArea.description")}
                       </p>
                       <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                        Start Risk Module
+                        {t("learningPath.recommendationsCard.focusArea.button")}
                       </Button>
                     </div>
 
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                      <h3 className="font-semibold text-green-900 mb-2">Strength: Emotional Awareness</h3>
+                      <h3 className="font-semibold text-green-900 mb-2">{t("learningPath.recommendationsCard.strength.title")}
+</h3>
                       <p className="text-green-800 text-sm mb-3">
-                        Excellent progress in emotional regulation! You're ready for advanced emotional intelligence
-                        modules and peer mentoring opportunities.
+                        {t("learningPath.recommendationsCard.strength.description")}
                       </p>
                       <Button size="sm" variant="outline" className="border-green-600 text-green-700">
-                        Explore Advanced Topics
+                        {t("learningPath.recommendationsCard.strength.button")}
                       </Button>
                     </div>
 
                     <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <h3 className="font-semibold text-yellow-900 mb-2">Habit Building Opportunity</h3>
+                      <h3 className="font-semibold text-yellow-900 mb-2">{t("learningPath.recommendationsCard.habitBuilding.title")}
+</h3>
                       <p className="text-yellow-800 text-sm mb-3">
-                        Your consistency in daily reflection is improving. Consider adding pre-market preparation to
-                        your routine for enhanced performance.
+                        {t("learningPath.recommendationsCard.habitBuilding.description")}
                       </p>
                       <Button size="sm" variant="outline" className="border-yellow-600 text-yellow-700">
-                        Build New Habit
+                        {t("learningPath.recommendationsCard.habitBuilding.button")}
                       </Button>
                     </div>
                   </div>
@@ -403,3 +408,67 @@ export default function LearningPathPage() {
     </div>
   )
 }
+
+
+
+
+
+// Add these to your common.json for each language
+/*
+{
+  "learningPath.title": "Learning Path",
+  "learningPath.description": "Your personalized journey through trading psychology mastery",
+  "learningPath.coreTitle": "Core Trading Psychology Journey",
+  "learningPath.coreDescription": "Master the fundamental principles from 'The Secrets of a Profitable Mind'",
+  "learningPath.coreDuration": "8-10 weeks",
+  "learningPath.remedialTitle": "Foundation Strengthening Path",
+  "learningPath.remedialDescription": "Reinforce core concepts with additional practice and simplified explanations",
+  "learningPath.remedialDuration": "4-6 weeks",
+  "learningPath.advancedTitle": "Advanced Psychology Mastery",
+  "learningPath.advancedDescription": "Deep dive into complex trading psychology and advanced strategies",
+  "learningPath.advancedDuration": "12-16 weeks",
+  "learningPath.progress": "Progress",
+  "learningPath.modules": "modules",
+  "learningPath.badge.core": "core",
+  "learningPath.badge.remedial": "remedial",
+  "learningPath.badge.advanced": "advanced",
+  "learningPath.tabs.modules": "Modules",
+  "learningPath.tabs.progress": "Progress",
+  "learningPath.tabs.recommendations": "Recommendations",
+  "learningPath.modulesDescription": "Complete modules in sequence to build comprehensive trading psychology skills",
+  "difficulty.beginner": "beginner",
+  "difficulty.intermediate": "intermediate",
+  "difficulty.advanced": "advanced",
+  "common.minutes": "min",
+  "module.status.completed": "Review",
+  "module.status.in-progress": "Continue",
+  "module.status.locked": "Locked",
+  "module.status.available": "Start",
+  "learningPath.progressCard.title": "Learning Progress",
+  "learningPath.progressCard.overallCompletion": "Overall Completion",
+  "learningPath.progressCard.exercisesCompleted": "Exercises Completed",
+  "learningPath.progressCard.assessmentsPassed": "Assessments Passed",
+  "learningPath.skillDevelopmentCard.title": "Skill Development",
+  "learningPath.skillDevelopmentCard.emotionalRegulation": "Emotional Regulation",
+  "learningPath.skillDevelopmentCard.riskManagement": "Risk Management",
+  "learningPath.skillDevelopmentCard.disciplineConsistency": "Discipline & Consistency",
+  "learningPath.recommendationsCard.title": "AI Recommendations",
+  "learningPath.recommendationsCard.description": "Personalized suggestions based on your progress and performance",
+  "learningPath.recommendationsCard.focusArea.title": "Focus Area: Risk Management",
+  "learningPath.recommendationsCard.focusArea.description": "Your assessment scores indicate room for improvement in risk psychology. Consider reviewing Chapter 3 and completing additional risk management exercises.",
+  "learningPath.recommendationsCard.focusArea.button": "Start Risk Module",
+  "learningPath.recommendationsCard.strength.title": "Strength: Emotional Awareness",
+  "learningPath.recommendationsCard.strength.description": "Excellent progress in emotional regulation! You're ready for advanced emotional intelligence modules and peer mentoring opportunities.",
+  "learningPath.recommendationsCard.strength.button": "Explore Advanced Topics",
+  "learningPath.recommendationsCard.habitBuilding.title": "Habit Building Opportunity",
+  "learningPath.recommendationsCard.habitBuilding.description": "Your consistency in daily reflection is improving. Consider adding pre-market preparation to your routine for enhanced performance.",
+  "learningPath.recommendationsCard.habitBuilding.button": "Build New Habit",
+  "module.psychologyOfTradingSuccess.title": "The Psychology of Trading Success",
+  "module.selfAssessmentTradingMindset.title": "Self-Assessment: Trading Mindset",
+  "module.emotionalRegulationFundamentals.title": "Emotional Regulation Fundamentals",
+  "module.emotionTrackingExercise.title": "Emotion Tracking Exercise",
+  "module.module1Assessment.title": "Module 1 Assessment",
+  "module.riskManagementPsychology.title": "Risk Management Psychology"
+}
+*/
+
