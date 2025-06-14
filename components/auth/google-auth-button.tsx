@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { useTranslation } from "react-i18next" // Import useTranslation
 
 interface GoogleAuthButtonProps {
   mode: "signin" | "signup"
@@ -9,6 +10,7 @@ interface GoogleAuthButtonProps {
 }
 
 export function GoogleAuthButton({ mode, onSuccess }: GoogleAuthButtonProps) {
+  const { t } = useTranslation() // Initialize useTranslation
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGoogleAuth = async () => {
@@ -60,8 +62,21 @@ export function GoogleAuthButton({ mode, onSuccess }: GoogleAuthButtonProps) {
             />
           </svg>
         )}
-        <span>{isLoading ? "Connecting..." : `Continue with Google`}</span>
+        <span>{isLoading ? t("googleAuth.connecting") : t("googleAuth.continueWithGoogle")}</span>
       </div>
     </Button>
   )
 }
+
+
+
+
+
+// Add these to your common.json for each language
+/*
+{
+  "googleAuth.connecting": "Connecting...",
+  "googleAuth.continueWithGoogle": "Continue with Google"
+}
+*/
+
