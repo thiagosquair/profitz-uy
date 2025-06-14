@@ -11,14 +11,12 @@ import { Brain, Target, BookOpen, TrendingUp, ArrowRight, Sparkles, Zap, Calenda
 import { InteractiveStatCard, AnimatedProgressRing, InteractiveActivityItem, LiveMetricDisplay, AnimatedCounter } from "@/components/interactive-widgets"
 import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
-import { useProfileBuilder } from "@/hooks/use-profile-builder"
 import { getCurrentUser, needsPsychologyAssessment } from "@/lib/auth-simulation"
 
 export default function DashboardContent() {
   const { t } = useTranslation()
   const [user, setUser] = useState<any>(null)
   const [showPsychologyPrompt, setShowPsychologyPrompt] = useState(false)
-  const { showPsychologyAssessment } = useProfileBuilder()
 
   useEffect(() => {
     const currentUser = getCurrentUser()
@@ -29,7 +27,7 @@ export default function DashboardContent() {
   }, [])
 
   const handleTakePsychologyAssessment = () => {
-    showPsychologyAssessment()
+    // For now, just hide the prompt - we'll implement the modal later
     setShowPsychologyPrompt(false)
   }
 
@@ -107,7 +105,7 @@ export default function DashboardContent() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={showPsychologyAssessment} 
+                onClick={() => setShowPsychologyPrompt(true)} 
                 className="border-purple-200 text-purple-600 hover:bg-purple-50"
               >
                 <Brain className="h-4 w-4 mr-2" />
@@ -178,11 +176,62 @@ export default function DashboardContent() {
             />
           </div>
 
-          {/* You can include your action cards, tabs, and other sections here as you had them */}
+          {/* Action Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center">
+                  <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                    <Brain className="h-5 w-5 text-blue-600" />
+                  </div>
+                  <CardTitle className="text-lg">AI Coach Session</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">Get personalized coaching based on your trading patterns.</p>
+                <Button className="w-full bg-blue-500 hover:bg-blue-600">
+                  Start Session
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center">
+                  <div className="p-2 bg-green-100 rounded-lg mr-3">
+                    <Target className="h-5 w-5 text-green-600" />
+                  </div>
+                  <CardTitle className="text-lg">Daily Exercise</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">Complete today's mental discipline exercise.</p>
+                <Button className="w-full bg-green-500 hover:bg-green-600">
+                  Start Exercise
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+              <CardHeader>
+                <div className="flex items-center">
+                  <div className="p-2 bg-purple-100 rounded-lg mr-3">
+                    <BookOpen className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <CardTitle className="text-lg">Trade Journal</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">Analyze your recent trades and emotions.</p>
+                <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                  Open Journal
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
     </div>
   )
 }
-
 
